@@ -1,0 +1,101 @@
+{
+  "sourceCapture": "G:\\arknights\\bike\\.cache\\video\\capture\\page@a42372deda2e75f8fc16ae922644f0eb.webm",
+  "sourceDuration": 150.4,
+  "trimStart": 12.6770661,
+  "timelineDuration": 136.28,
+  "narration": {
+    "path": "G:\\arknights\\bike\\video\\narration.wav",
+    "duration": 136.28,
+    "size": 26165838
+  },
+  "video": {
+    "path": "G:\\arknights\\bike\\video\\wuling-perlica-demo.mp4",
+    "duration": 136.28,
+    "size": 27508464,
+    "bitRate": 1614820,
+    "videoCodec": "h264",
+    "audioCodec": "aac",
+    "width": 1440,
+    "height": 900,
+    "frameRate": "25/1"
+  },
+  "scenes": [
+    {
+      "index": 1,
+      "id": "01-intro",
+      "audioDuration": 10.72,
+      "sceneDuration": 12.520000000000001,
+      "title": "风起武陵"
+    },
+    {
+      "index": 2,
+      "id": "02-map",
+      "audioDuration": 12.16,
+      "sceneDuration": 13.16,
+      "title": "武陵 · 方兴衢"
+    },
+    {
+      "index": 3,
+      "id": "03-auto",
+      "audioDuration": 12.48,
+      "sceneDuration": 13.48,
+      "title": "自动巡航"
+    },
+    {
+      "index": 4,
+      "id": "04-free",
+      "audioDuration": 13.6,
+      "sceneDuration": 14.6,
+      "title": "自由操控"
+    },
+    {
+      "index": 5,
+      "id": "05-brake",
+      "audioDuration": 11.12,
+      "sceneDuration": 12.12,
+      "title": "制动与停车"
+    },
+    {
+      "index": 6,
+      "id": "06-reverse",
+      "audioDuration": 8.96,
+      "sceneDuration": 9.96,
+      "title": "低速倒车"
+    },
+    {
+      "index": 7,
+      "id": "07-drivetrain",
+      "audioDuration": 11.76,
+      "sceneDuration": 12.76,
+      "title": "同步传动"
+    },
+    {
+      "index": 8,
+      "id": "08-details",
+      "audioDuration": 10.24,
+      "sceneDuration": 11.24,
+      "title": "城市车细节"
+    },
+    {
+      "index": 9,
+      "id": "09-world",
+      "audioDuration": 11.92,
+      "sceneDuration": 12.92,
+      "title": "程序化武陵"
+    },
+    {
+      "index": 10,
+      "id": "10-credits",
+      "audioDuration": 13.52,
+      "sceneDuration": 14.52,
+      "title": "制作流程"
+    },
+    {
+      "index": 11,
+      "id": "11-outro",
+      "audioDuration": 8,
+      "sceneDuration": 9,
+      "title": "沿方兴衢，驭风而行"
+    }
+  ]
+}

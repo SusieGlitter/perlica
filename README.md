@@ -30,6 +30,24 @@ https://susieglitter.github.io/perlica/
 
 启动开发服务器后，可运行 `npm run verify` 自动检查传动齿比、左右转向、倒车脚部动作、建筑碰撞、巡航回归、音频交付和桌面/移动端截图。
 
+## 演示视频
+
+约 136 秒的《风起武陵》宣传片位于 `video/wuling-perlica-demo.mp4`，展示地图、自动巡航、
+自由操控、停车换脚、倒车、传动结构、城市车细节和程序化武陵场景。旁白使用 QwenTTS
+复刻公开佩丽卡中文语音片段中的音色，视频画面由 Playwright 自动录制，最终使用
+FFmpeg 合成原创配乐《武陵云道》。
+
+```powershell
+python tools/generate_narration.py enroll
+python tools/generate_narration.py synthesize
+npm run capture:demo
+npm run build:video
+```
+
+详细来源、时间线和验证结果见 `video/README.md`、`video/NARRATION.md` 与
+`video/build-report.json`。完整版 `ffmpeg` 不属于仓库依赖，脚本默认从
+`.cache/tools/ffmpeg/bin/` 查找；也可通过 `FFMPEG_PATH` 和 `FFPROBE_PATH` 指定。
+
 ## 交互
 
 - `开始骑行`：收起标题，进入完整导览视角。
