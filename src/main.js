@@ -9,6 +9,7 @@ import {
   ArrowDown,
   CircleStop,
   Gauge,
+  Code2,
   Pause,
   Play,
   Route,
@@ -70,6 +71,7 @@ createIcons({
     ArrowDown,
     CircleStop,
     Gauge,
+    Code2,
     ScanEye,
     Volume2,
     VolumeX,
@@ -265,7 +267,7 @@ function loadModel() {
 
   const loader = new GLTFLoader(manager);
   loader.load(
-    "/assets/models/perlica_rigged.glb",
+    `${import.meta.env.BASE_URL}assets/models/perlica_rigged.glb`,
     async (gltf) => {
       rider = await loadRider(gltf, bicycle);
       updateLoading(100);
@@ -300,6 +302,7 @@ function setIcon(button, name) {
       ArrowDown,
       CircleStop,
       Gauge,
+      Code2,
       ScanEye,
       Volume2,
       VolumeX,
@@ -1163,7 +1166,7 @@ function updateWorldLabels() {
   }
 }
 
-const ambientSound = new RideMusic("/assets/audio/wuling-cloudway.wav");
+const ambientSound = new RideMusic(`${import.meta.env.BASE_URL}assets/audio/wuling-cloudway.wav`);
 
 function updateClock() {
   const now = new Date();

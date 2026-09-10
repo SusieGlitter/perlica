@@ -20,6 +20,12 @@ npm run preview
 
 `dist/` 是完整静态产物，可将该目录部署到任意静态站点。
 
+仓库已配置 GitHub Pages 自动部署。推送到 `main` 后，工作流会构建 `dist/` 并发布到：
+
+https://susieglitter.github.io/perlica/
+
+页面右上角的“项目仓库”入口指向 https://github.com/SusieGlitter/perlica 。
+
 `preview/desktop.png` 与 `preview/mobile.png` 是本地验收截图。
 
 启动开发服务器后，可运行 `npm run verify` 自动检查传动齿比、左右转向、倒车脚部动作、建筑碰撞、巡航回归、音频交付和桌面/移动端截图。

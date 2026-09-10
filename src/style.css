@@ -227,6 +227,45 @@ button {
   letter-spacing: 0.12em;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  pointer-events: auto;
+}
+
+.repo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 0 11px;
+  border: 1px solid rgba(202, 241, 237, 0.24);
+  color: rgba(232, 249, 247, 0.82);
+  background: rgba(5, 25, 32, 0.42);
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  backdrop-filter: blur(12px);
+  transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
+}
+
+.repo-link:hover,
+.repo-link:focus-visible {
+  border-color: rgba(112, 238, 221, 0.68);
+  color: #ffffff;
+  background: rgba(12, 54, 61, 0.72);
+  outline: none;
+}
+
+.repo-link svg {
+  width: 15px;
+  height: 15px;
+  color: var(--cyan);
+}
+
 .minimap-panel {
   position: fixed;
   z-index: 9;
@@ -1028,6 +1067,21 @@ button {
   .telemetry,
   .hero-slogan,
   .hero-subtitle {
+    display: none;
+  }
+
+  .topbar-actions {
+    gap: 0;
+  }
+
+  .repo-link {
+    width: 38px;
+    min-height: 36px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .repo-link span {
     display: none;
   }
 
