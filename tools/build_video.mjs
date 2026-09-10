@@ -14,8 +14,10 @@ const videoOutput = path.join(root, "video", "wuling-perlica-demo.mp4");
 const reportOutput = path.join(root, "video", "build-report.json");
 const posterOutput = path.join(root, "video", "poster.jpg");
 const previewOutput = path.join(root, "video", "preview-contact.png");
+const supportOutput = path.join(root, "video", "support-transfer.jpg");
 const posterTemp = path.join(root, ".cache", "video", "poster-build.jpg");
 const previewTemp = path.join(root, ".cache", "video", "preview-build.png");
+const supportTemp = path.join(root, ".cache", "video", "support-build.jpg");
 const musicPath = path.join(root, "public", "assets", "audio", "wuling-cloudway.wav");
 const ffmpeg = process.env.FFMPEG_PATH
   ?? path.join(root, ".cache", "tools", "ffmpeg", "bin", "ffmpeg.exe");
@@ -211,10 +213,53 @@ await execFileAsync(ffmpeg, [
   "1",
   previewTemp,
 ]);
+const sceneOffsets = [];
+let sceneCursor = 0;
+for (const scene of capture.scenes) {
+  sceneOffsets.push(sceneCursor);
+  sceneCursor += scene.sceneDuration;
+}
+const supportSceneIndex = capture.scenes.findIndex((scene) => scene.id === "05-brake");
+assert.ok(supportSceneIndex >= 0, "support-transfer scene must exist");
+const supportScene = capture.scenes[supportSceneIndex];
+const supportSceneStart = sceneOffsets[supportSceneIndex];
+const supportTimes = [0.35, 0.55, 0.85].map(
+  (phase) => supportSceneStart + supportScene.sceneDuration * phase,
+);
+await execFileAsync(ffmpeg, [
+  "-y",
+  "-hide_banner",
+  "-loglevel",
+  "error",
+  "-ss",
+  String(supportTimes[0]),
+  "-i",
+  videoOutput,
+  "-ss",
+  String(supportTimes[1]),
+  "-i",
+  videoOutput,
+  "-ss",
+  String(supportTimes[2]),
+  "-i",
+  videoOutput,
+  "-filter_complex",
+  "[0:v]scale=640:-1[a];[1:v]scale=640:-1[b];[2:v]scale=640:-1[c];"
+    + "[a][b][c]hstack=inputs=3[out]",
+  "-map",
+  "[out]",
+  "-frames:v",
+  "1",
+  "-q:v",
+  "2",
+  supportTemp,
+]);
 await rm(posterOutput, { force: true });
 await rename(posterTemp, posterOutput);
 await rm(previewOutput, { force: true });
 await rename(previewTemp, previewOutput);
+await rm(supportOutput, { force: true });
+await rename(supportTemp, supportOutput);
 
 const narrationProbe = await probe(narrationOutput);
 const videoProbe = await probe(videoOutput);

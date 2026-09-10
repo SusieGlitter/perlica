@@ -10,6 +10,9 @@
 - 旁白母版：`narration.wav`
 - 自动验证报告：`build-report.json`
 - 抽帧预览：`preview-contact.png`
+- 换腿三阶段对照：`support-transfer.jpg`
+
+![左脚支撑、双脚过渡、右脚支撑](support-transfer.jpg)
 
 ## 镜头
 

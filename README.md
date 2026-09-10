@@ -49,6 +49,8 @@ npm run build:video
 `video/build-report.json`。完整版 `ffmpeg` 不属于仓库依赖，脚本默认从
 `.cache/tools/ffmpeg/bin/` 查找；也可通过 `FFMPEG_PATH` 和 `FFPROBE_PATH` 指定。
 
+![单脚支撑与换腿](video/support-transfer.jpg)
+
 ## 交互
 
 - `开始骑行`：收起标题，进入完整导览视角。
