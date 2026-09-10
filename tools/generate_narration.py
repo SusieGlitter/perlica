@@ -85,7 +85,10 @@ def synthesize(args: argparse.Namespace) -> None:
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    selected_ids = set(args.id or [])
     for item in manifest["segments"]:
+        if selected_ids and item["id"] not in selected_ids:
+            continue
         response = post_json(
             "/services/aigc/multimodal-generation/generation",
             {
@@ -134,6 +137,11 @@ def main() -> None:
         default=str(ROOT / ".cache/video/perlica-voice.txt"),
     )
     synthesize_parser.add_argument("--voice")
+    synthesize_parser.add_argument(
+        "--id",
+        action="append",
+        help="Only synthesize the selected segment id; may be repeated.",
+    )
     synthesize_parser.add_argument(
         "--output-dir",
         default=str(ROOT / "video/audio"),

@@ -16,6 +16,23 @@ const ffprobe = process.env.FFPROBE_PATH
   ?? path.join(root, ".cache", "tools", "ffmpeg", "bin", "ffprobe.exe");
 const leadSeconds = 0.8;
 const gapSeconds = 1;
+const useGpuCapture = process.env.WULING_GPU_CAPTURE !== "0";
+const gpuArgs = process.platform === "win32"
+  ? [
+      "--enable-gpu",
+      "--ignore-gpu-blocklist",
+      "--use-angle=d3d11",
+      "--enable-webgl",
+      "--disable-software-rasterizer",
+    ]
+  : [
+      "--enable-gpu",
+      "--ignore-gpu-blocklist",
+      "--use-gl=angle",
+      "--use-angle=gl",
+      "--enable-webgl",
+      "--disable-software-rasterizer",
+    ];
 
 const manifest = JSON.parse(
   await readFile(path.join(root, "video", "narration.json"), "utf8"),
@@ -55,7 +72,10 @@ for (const scene of scenes) {
 
 await mkdir(outputDir, { recursive: true });
 
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({
+  headless: true,
+  args: useGpuCapture ? gpuArgs : [],
+});
 const context = await browser.newContext({
   viewport: { width: 1440, height: 900 },
   deviceScaleFactor: 1,
@@ -81,7 +101,35 @@ await page.waitForFunction(() => window.__WULING_DEBUG__?.rider, null, {
 });
 await page.locator("#start-ride").evaluate((button) => button.click());
 
+const rendererInfo = await page.evaluate(() => {
+  const gl = document.querySelector("#scene").getContext("webgl2")
+    ?? document.querySelector("#scene").getContext("webgl");
+  const extension = gl?.getExtension("WEBGL_debug_renderer_info");
+  return {
+    vendor: extension ? gl.getParameter(extension.UNMASKED_VENDOR_WEBGL) : null,
+    renderer: extension ? gl.getParameter(extension.UNMASKED_RENDERER_WEBGL) : null,
+  };
+});
+assert.ok(
+  !/swiftshader|software/i.test(`${rendererInfo.vendor} ${rendererInfo.renderer}`),
+  `software WebGL renderer is too slow for smooth capture: ${JSON.stringify(rendererInfo)}`,
+);
+
 await page.evaluate(() => {
+  window.__DEMO_RENDER_STATS__ = {
+    active: true,
+    previous: 0,
+    deltas: [],
+  };
+  const sampleFrame = (time) => {
+    const stats = window.__DEMO_RENDER_STATS__;
+    if (!stats.active) return;
+    if (stats.previous) stats.deltas.push(time - stats.previous);
+    stats.previous = time;
+    requestAnimationFrame(sampleFrame);
+  };
+  requestAnimationFrame(sampleFrame);
+
   const style = document.createElement("style");
   style.textContent = `
     #demo-overlay {
@@ -154,6 +202,64 @@ await page.evaluate(() => {
       font-family: "Bahnschrift", "Arial Narrow", sans-serif;
       letter-spacing: 0.13em;
     }
+    .demo-focus .minimap-panel,
+    .demo-focus .route-panel,
+    .demo-focus .telemetry,
+    .demo-focus .location-card,
+    .demo-focus .controls {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: opacity 180ms ease;
+    }
+    #demo-support-cue {
+      position: fixed;
+      z-index: 85;
+      left: 50%;
+      bottom: 54px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 11px 17px 12px;
+      border: 1px solid rgba(214, 247, 242, 0.28);
+      color: #effffd;
+      background: rgba(4, 25, 32, 0.86);
+      box-shadow: 0 16px 38px rgba(0, 12, 18, 0.3);
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+      transform: translate(-50%, 12px);
+      opacity: 0;
+      pointer-events: none;
+      backdrop-filter: blur(12px);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+    #demo-support-cue.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    #demo-support-cue b {
+      color: #70eedd;
+      font-family: "Bahnschrift", "Arial Narrow", sans-serif;
+      font-size: 24px;
+      letter-spacing: 0.08em;
+    }
+    #demo-support-cue span {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+    #demo-support-cue small {
+      display: block;
+      margin-top: 2px;
+      color: rgba(228, 248, 245, 0.62);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+    }
+    #demo-support-cue[data-phase="both"] b {
+      color: #ffb77d;
+    }
+    #demo-support-cue[data-phase="right"] b {
+      color: #ffd36f;
+    }
     @media (max-width: 760px) {
       #demo-overlay {
         top: 132px;
@@ -180,6 +286,14 @@ await page.evaluate(() => {
     <p></p>
   `;
   document.body.appendChild(overlay);
+  const supportCue = document.createElement("div");
+  supportCue.id = "demo-support-cue";
+  supportCue.dataset.phase = "left";
+  supportCue.innerHTML = `
+    <b></b>
+    <div><span></span><small></small></div>
+  `;
+  document.body.appendChild(supportCue);
 });
 
 async function setOverlay(index, style, title, subtitle) {
@@ -199,6 +313,28 @@ async function setOverlay(index, style, title, subtitle) {
 
 async function evaluate(action, argument) {
   await page.evaluate(action, argument);
+}
+
+async function setSupportCue(phase, index, label, detail) {
+  await page.locator("#demo-support-cue").evaluate((cue, value) => {
+    cue.dataset.phase = value.phase;
+    cue.querySelector("b").textContent = value.index;
+    cue.querySelector("span").textContent = value.label;
+    cue.querySelector("small").textContent = value.detail;
+    cue.classList.add("show");
+  }, { phase, index, label, detail });
+}
+
+async function hideSupportCue() {
+  await page.locator("#demo-support-cue").evaluate((cue) => {
+    cue.classList.remove("show");
+  });
+}
+
+async function setFocusMode(active) {
+  await page.evaluate((value) => {
+    document.querySelector("#app").classList.toggle("demo-focus", value);
+  }, active);
 }
 
 async function waitForTimestamp(timestamp) {
@@ -273,28 +409,54 @@ const sceneRunners = [
     await evaluate(() => window.__WULING_DEBUG__.keys.clear());
   },
   async (sceneStart, duration) => {
+    await resetFreeRide(0.52);
+    await evaluate(() => {
+      const debug = window.__WULING_DEBUG__;
+      debug.freeRide.speed = 7.4;
+      debug.setTimeScale(0.5);
+      debug.setCamera("low");
+      debug.setCameraOffset(0.45, 0.15);
+      debug.keys.add("Space");
+    });
+    await setSupportCue("left", "01", "判断停车重心", "先减速，再选择支撑方向");
+    await waitForTimestamp(sceneStart + duration * 0.14);
     await resetFreeRide(0.58);
     await evaluate(() => {
       const debug = window.__WULING_DEBUG__;
-      debug.freeRide.speed = 9.2;
-      debug.keys.add("KeyW");
-      debug.setCamera("low");
-      debug.setCameraOffset(-0.2, 0.15);
+      debug.keys.clear();
+      debug.freeRide.speed = 0;
+      debug.freeRide.footDown = 1;
+      debug.freeRide.supportSide = 1;
+      debug.freeRide.supportTarget = 1;
+      debug.freeRide.supportTransition = 0;
+      debug.freeRide.bothFeet = 0;
+      debug.setTimeScale(0.32);
+      debug.setCameraRig([2.45, 1.05, -0.4], [0, 0.32, 0.35]);
     });
-    await waitForTimestamp(sceneStart + duration * 0.14);
-    await evaluate(() => {
-      const debug = window.__WULING_DEBUG__;
-      debug.keys.delete("KeyW");
-      debug.keys.add("Space");
-    });
-    await waitForTimestamp(sceneStart + duration * 0.48);
-    await evaluate(() => window.__WULING_DEBUG__.keys.delete("Space"));
-    await waitForTimestamp(sceneStart + duration * 0.7);
+    await setFocusMode(true);
+    await setSupportCue("left", "01", "左脚落地支撑", "左侧踏板抬高，左脚接触地面");
+    await waitForTimestamp(sceneStart + duration * 0.5);
     await evaluate(() => {
       const debug = window.__WULING_DEBUG__;
       debug.freeRide.supportTarget = -1;
       debug.freeRide.supportTransition = 0.58;
     });
+    await setSupportCue("both", "02", "双脚同时着地", "重心从左侧转移到右侧");
+    await waitForTimestamp(sceneStart + duration * 0.62);
+    await evaluate(() => {
+      const debug = window.__WULING_DEBUG__;
+      debug.setCameraRig([-2.45, 1.05, -0.4], [0, 0.32, 0.35]);
+    });
+    await setSupportCue("right", "03", "右脚接替支撑", "左脚收回踏板，车辆稳定驻停");
+    await waitForTimestamp(sceneStart + duration * 0.94);
+    await evaluate(() => {
+      const debug = window.__WULING_DEBUG__;
+      debug.keys.clear();
+      debug.setTimeScale(1);
+      debug.clearCameraRig();
+    });
+    await hideSupportCue();
+    await setFocusMode(false);
     await waitForTimestamp(sceneStart + duration);
   },
   async (sceneStart, duration) => {
@@ -366,14 +528,14 @@ const sceneRunners = [
       const debug = window.__WULING_DEBUG__;
       debug.setRideMode("auto");
       debug.setRouteT(0.82);
-      debug.setCamera("low");
-      debug.setCameraOffset(-1.05, 0.15);
+      debug.setCamera("chase");
+      debug.setCameraOffset(0.45, 0.15);
     });
     await waitForTimestamp(sceneStart + duration * 0.6);
     await evaluate(() => {
       const debug = window.__WULING_DEBUG__;
       debug.setCamera("chase");
-      debug.setCameraOffset(0.8, 0.1);
+      debug.setCameraOffset(-0.45, 0.12);
     });
     await waitForTimestamp(sceneStart + duration);
   },
@@ -412,8 +574,8 @@ const sceneCopy = [
   },
   {
     style: "caption",
-    title: "制动与停车",
-    subtitle: "重心决定支撑脚 · 双脚过渡后稳定驻车",
+    title: "单脚支撑与换腿",
+    subtitle: "左脚支撑 → 双脚过渡 → 右脚支撑",
   },
   {
     style: "caption",
@@ -457,6 +619,31 @@ for (let index = 0; index < scenes.length; index++) {
 }
 
 await page.waitForTimeout(500);
+const renderStats = await page.evaluate(() => {
+  const stats = window.__DEMO_RENDER_STATS__;
+  stats.active = false;
+  const deltas = stats.deltas.slice().sort((left, right) => left - right);
+  const percentile = (value) => (
+    deltas[Math.min(deltas.length - 1, Math.floor(deltas.length * value))] ?? 0
+  );
+  const total = deltas.reduce((sum, value) => sum + value, 0);
+  return {
+    frames: deltas.length,
+    elapsed: total / 1000,
+    averageFps: total > 0 ? deltas.length / (total / 1000) : 0,
+    medianGap: percentile(0.5),
+    p95Gap: percentile(0.95),
+    maxGap: deltas[deltas.length - 1] ?? 0,
+  };
+});
+assert.ok(
+  renderStats.averageFps >= 24,
+  `GPU capture must render at least 24 fps, received ${renderStats.averageFps.toFixed(2)}`,
+);
+assert.ok(
+  renderStats.p95Gap <= 100,
+  `95th percentile frame gap must stay below 100 ms, received ${renderStats.p95Gap.toFixed(1)} ms`,
+);
 const setupSeconds = (timelineStartedAt - captureStartedAt) / 1000;
 await context.close();
 const recordedPath = await page.video().path();
@@ -473,6 +660,8 @@ await writeFile(
       timelineDuration,
       leadSeconds,
       gapSeconds,
+      rendererInfo,
+      renderStats,
       scenes: scenes.map((scene, index) => ({
         index: index + 1,
         id: scene.id,
@@ -495,6 +684,8 @@ console.log(JSON.stringify({
   notesOutput,
   setupSeconds,
   timelineDuration,
+  rendererInfo,
+  renderStats,
   sceneCount: scenes.length,
   runtimeErrors,
 }, null, 2));

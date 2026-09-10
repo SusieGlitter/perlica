@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -12,6 +12,10 @@ const narrationManifestPath = path.join(root, "video", "narration.json");
 const narrationOutput = path.join(root, "video", "narration.wav");
 const videoOutput = path.join(root, "video", "wuling-perlica-demo.mp4");
 const reportOutput = path.join(root, "video", "build-report.json");
+const posterOutput = path.join(root, "video", "poster.jpg");
+const previewOutput = path.join(root, "video", "preview-contact.png");
+const posterTemp = path.join(root, ".cache", "video", "poster-build.jpg");
+const previewTemp = path.join(root, ".cache", "video", "preview-build.png");
 const musicPath = path.join(root, "public", "assets", "audio", "wuling-cloudway.wav");
 const ffmpeg = process.env.FFMPEG_PATH
   ?? path.join(root, ".cache", "tools", "ffmpeg", "bin", "ffmpeg.exe");
@@ -21,6 +25,10 @@ const ffprobe = process.env.FFPROBE_PATH
 const capture = JSON.parse(await readFile(capturePath, "utf8"));
 const manifest = JSON.parse(await readFile(narrationManifestPath, "utf8"));
 assert.equal(capture.runtimeErrors.length, 0, "browser capture must have no errors");
+assert.ok(
+  capture.renderStats?.averageFps >= 24,
+  "capture report must confirm a GPU-rendered source above 24 fps",
+);
 
 const rawVideo = capture.recordedPath;
 const trimStart = Math.max(0, capture.setupSeconds - 0.05);
@@ -44,6 +52,26 @@ async function probe(input) {
   return JSON.parse(stdout);
 }
 
+async function countUniqueFrames(input) {
+  const { stderr } = await execFileAsync(
+    ffmpeg,
+    [
+      "-hide_banner",
+      "-i",
+      input,
+      "-vf",
+      "mpdecimate=hi=64*12:lo=64*5:frac=0.33",
+      "-an",
+      "-f",
+      "null",
+      "-",
+    ],
+    { maxBuffer: 20 * 1024 * 1024 },
+  );
+  const matches = [...stderr.matchAll(/frame=\s*(\d+)/g)];
+  return Number.parseInt(matches.at(-1)?.[1] ?? "0", 10);
+}
+
 const rawProbe = await probe(rawVideo);
 const rawDuration = Number.parseFloat(rawProbe.format.duration);
 assert.ok(
@@ -52,6 +80,12 @@ assert.ok(
 );
 assert.equal(rawProbe.streams[0].width, 1440, "raw capture width must be 1440");
 assert.equal(rawProbe.streams[0].height, 900, "raw capture height must be 900");
+const sourceUniqueFrames = await countUniqueFrames(rawVideo);
+const sourceUniqueFps = sourceUniqueFrames / rawDuration;
+assert.ok(
+  sourceUniqueFps >= 16,
+  `raw capture must preserve at least 16 unique fps, received ${sourceUniqueFps.toFixed(2)}`,
+);
 
 const narrationFilters = segmentPaths.map((_, index) => {
   const delay = index === 0 ? `,adelay=${leadMs}|${leadMs}` : "";
@@ -120,9 +154,11 @@ await execFileAsync(
     "-preset",
     "medium",
     "-crf",
-    "22",
+    "20",
     "-profile:v",
     "high",
+    "-tune",
+    "film",
     "-level",
     "4.1",
     "-pix_fmt",
@@ -147,6 +183,39 @@ await execFileAsync(
   { maxBuffer: 10 * 1024 * 1024 },
 );
 
+await execFileAsync(ffmpeg, [
+  "-y",
+  "-hide_banner",
+  "-loglevel",
+  "error",
+  "-ss",
+  "7.5",
+  "-i",
+  videoOutput,
+  "-frames:v",
+  "1",
+  "-q:v",
+  "2",
+  posterTemp,
+]);
+await execFileAsync(ffmpeg, [
+  "-y",
+  "-hide_banner",
+  "-loglevel",
+  "error",
+  "-i",
+  videoOutput,
+  "-vf",
+  "fps=1/9,scale=360:-1,tile=4x4",
+  "-frames:v",
+  "1",
+  previewTemp,
+]);
+await rm(posterOutput, { force: true });
+await rename(posterTemp, posterOutput);
+await rm(previewOutput, { force: true });
+await rename(previewTemp, previewOutput);
+
 const narrationProbe = await probe(narrationOutput);
 const videoProbe = await probe(videoOutput);
 const videoStream = videoProbe.streams.find((stream) => stream.codec_type === "video");
@@ -167,8 +236,12 @@ assert.ok(
 const report = {
   sourceCapture: rawVideo,
   sourceDuration: rawDuration,
+  sourceUniqueFrames,
+  sourceUniqueFps,
   trimStart,
   timelineDuration: duration,
+  rendererInfo: capture.rendererInfo,
+  renderStats: capture.renderStats,
   narration: {
     path: narrationOutput,
     duration: Number.parseFloat(narrationProbe.format.duration),

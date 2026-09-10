@@ -1,18 +1,32 @@
 {
-  "sourceCapture": "G:\\arknights\\bike\\.cache\\video\\capture\\page@a42372deda2e75f8fc16ae922644f0eb.webm",
-  "sourceDuration": 150.4,
-  "trimStart": 12.6770661,
-  "timelineDuration": 136.28,
+  "sourceCapture": "G:\\arknights\\bike\\.cache\\video\\capture\\page@f32ab9e5dc031eb35fd584f10d129abb.webm",
+  "sourceDuration": 145.16,
+  "sourceUniqueFrames": 3509,
+  "sourceUniqueFps": 24.173325985119867,
+  "trimStart": 3.5610398000000005,
+  "timelineDuration": 140.28,
+  "rendererInfo": {
+    "vendor": "Google Inc. (Intel)",
+    "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x0000A7A0) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "renderStats": {
+    "frames": 6060,
+    "elapsed": 140.7943999999976,
+    "averageFps": 43.041484604502045,
+    "medianGap": 16.69999999999709,
+    "p95Gap": 50,
+    "maxGap": 233.40000000000146
+  },
   "narration": {
     "path": "G:\\arknights\\bike\\video\\narration.wav",
-    "duration": 136.28,
-    "size": 26165838
+    "duration": 140.28,
+    "size": 26933838
   },
   "video": {
     "path": "G:\\arknights\\bike\\video\\wuling-perlica-demo.mp4",
-    "duration": 136.28,
-    "size": 27508464,
-    "bitRate": 1614820,
+    "duration": 140.28,
+    "size": 92793485,
+    "bitRate": 5291901,
     "videoCodec": "h264",
     "audioCodec": "aac",
     "width": 1440,
@@ -51,9 +65,9 @@
     {
       "index": 5,
       "id": "05-brake",
-      "audioDuration": 11.12,
-      "sceneDuration": 12.12,
-      "title": "制动与停车"
+      "audioDuration": 15.119999999999997,
+      "sceneDuration": 16.119999999999997,
+      "title": "单脚支撑与换腿"
     },
     {
       "index": 6,

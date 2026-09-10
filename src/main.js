@@ -121,6 +121,8 @@ let previousPointer = new THREE.Vector2();
 let activeStopIndex = -1;
 let routeDirty = true;
 let cameraSnap = true;
+let debugCameraRig = null;
+let debugTimeScale = 1;
 let elapsedTime = 0;
 let lastFrameTime = performance.now();
 
@@ -887,6 +889,18 @@ function getCameraRig() {
   const chaseDistance = isMobile ? 4.6 : 3.85;
   const cinemaTime = elapsedTime * 0.24;
 
+  if (debugCameraRig) {
+    desiredCameraPosition
+      .copy(debugCameraRig.position)
+      .applyQuaternion(bicycle.group.quaternion)
+      .add(bikePosition);
+    desiredCameraTarget
+      .copy(debugCameraRig.target)
+      .applyQuaternion(bicycle.group.quaternion)
+      .add(bikePosition);
+    return;
+  }
+
   if (isMobile) {
     if (activeCamera === "low") {
       localCamera.set(-2.25 + cameraSideOffset * 0.35, 1.25 + cameraLift * 0.4, -5.8);
@@ -1188,7 +1202,7 @@ function resize() {
 
 function animate() {
   const now = performance.now();
-  const delta = Math.min((now - lastFrameTime) / 1000, 0.05);
+  const delta = Math.min((now - lastFrameTime) / 1000, 0.05) * debugTimeScale;
   lastFrameTime = now;
   elapsedTime += delta;
   const elapsed = elapsedTime;
@@ -1437,6 +1451,21 @@ if (import.meta.env.DEV) {
       cameraSideOffset = THREE.MathUtils.clamp(side, -2.2, 2.2);
       cameraLift = THREE.MathUtils.clamp(lift, -0.5, 1.2);
       cameraSnap = true;
+    },
+    setCameraRig(position, target) {
+      debugCameraRig = {
+        position: new THREE.Vector3(...position),
+        target: new THREE.Vector3(...target),
+      };
+      cameraSnap = true;
+    },
+    clearCameraRig() {
+      debugCameraRig = null;
+      cameraSnap = true;
+    },
+    setTimeScale(value = 1) {
+      debugTimeScale = THREE.MathUtils.clamp(value, 0.05, 2);
+      lastFrameTime = performance.now();
     },
     get rider() {
       return rider;
