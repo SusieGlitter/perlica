@@ -5,4 +5,5 @@ dist/
 deobfuscated/
 .qa/
 .devserver.log
+.devserver-error.log
 .preview.log
