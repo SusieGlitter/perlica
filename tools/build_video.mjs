@@ -11,6 +11,13 @@ const capturePath = path.join(root, ".cache", "video", "capture", "capture.json"
 const narrationManifestPath = path.join(root, "video", "narration.json");
 const narrationOutput = path.join(root, "video", "narration.wav");
 const videoOutput = path.join(root, "video", "wuling-perlica-demo.mp4");
+const remuxedVideo = path.join(
+  root,
+  ".cache",
+  "video",
+  "capture",
+  "wuling-perlica-demo-hd-remux.webm",
+);
 const reportOutput = path.join(root, "video", "build-report.json");
 const posterOutput = path.join(root, "video", "poster.jpg");
 const previewOutput = path.join(root, "video", "preview-contact.png");
@@ -35,11 +42,27 @@ assert.ok(
 const rawVideo = capture.recordedPath;
 const trimStart = Math.max(0, capture.setupSeconds - 0.05);
 const duration = capture.timelineDuration;
+const expectedWidth = capture.captureWidth ?? 1440;
+const expectedHeight = capture.captureHeight ?? 900;
 const leadMs = Math.round(capture.leadSeconds * 1000);
 const gapSeconds = capture.gapSeconds;
 const segmentPaths = manifest.segments.map((segment) => (
   path.join(root, "video", "audio", `${segment.id}.wav`)
 ));
+
+await execFileAsync(ffmpeg, [
+  "-y",
+  "-hide_banner",
+  "-loglevel",
+  "warning",
+  "-i",
+  rawVideo,
+  "-map",
+  "0:v:0",
+  "-c",
+  "copy",
+  remuxedVideo,
+]);
 
 async function probe(input) {
   const { stdout } = await execFileAsync(ffprobe, [
@@ -74,15 +97,26 @@ async function countUniqueFrames(input) {
   return Number.parseInt(matches.at(-1)?.[1] ?? "0", 10);
 }
 
-const rawProbe = await probe(rawVideo);
-const rawDuration = Number.parseFloat(rawProbe.format.duration);
+const rawProbe = await probe(remuxedVideo);
+const probedRawDuration = Number.parseFloat(rawProbe.format.duration);
+const rawDuration = Number.isFinite(probedRawDuration)
+  ? probedRawDuration
+  : capture.renderStats.elapsed;
 assert.ok(
   rawDuration >= trimStart + duration - 0.25,
   "raw recording must cover the complete narration timeline",
 );
-assert.equal(rawProbe.streams[0].width, 1440, "raw capture width must be 1440");
-assert.equal(rawProbe.streams[0].height, 900, "raw capture height must be 900");
-const sourceUniqueFrames = await countUniqueFrames(rawVideo);
+assert.equal(
+  rawProbe.streams[0].width,
+  expectedWidth,
+  `raw capture width must be ${expectedWidth}`,
+);
+assert.equal(
+  rawProbe.streams[0].height,
+  expectedHeight,
+  `raw capture height must be ${expectedHeight}`,
+);
+const sourceUniqueFrames = await countUniqueFrames(remuxedVideo);
 const sourceUniqueFps = sourceUniqueFrames / rawDuration;
 assert.ok(
   sourceUniqueFps >= 16,
@@ -119,8 +153,7 @@ await execFileAsync(ffmpeg, [
 
 const fadeOutStart = Math.max(0, duration - 1.5);
 const videoFilter = [
-  `[0:v]trim=start=${trimStart}:duration=${duration},`
-    + "setpts=PTS-STARTPTS,fps=25[video]",
+  `[0:v]trim=start=${trimStart}:duration=${duration},fps=25[video]`,
 ];
 const audioFilter = [
   "[1:a]volume=1.12,apad=pad_dur=1[narration]",
@@ -138,7 +171,7 @@ await execFileAsync(
     "-loglevel",
     "warning",
     "-i",
-    rawVideo,
+    remuxedVideo,
     "-i",
     narrationOutput,
     "-stream_loop",
@@ -179,6 +212,8 @@ await execFileAsync(
     "2",
     "-movflags",
     "+faststart",
+    "-t",
+    String(duration),
     "-shortest",
     videoOutput,
   ],
@@ -268,8 +303,8 @@ const audioStream = videoProbe.streams.find((stream) => stream.codec_type === "a
 const finalDuration = Number.parseFloat(videoProbe.format.duration);
 
 assert.equal(videoStream.codec_name, "h264", "final video must be H.264");
-assert.equal(videoStream.width, 1440, "final video width must be 1440");
-assert.equal(videoStream.height, 900, "final video height must be 900");
+assert.equal(videoStream.width, expectedWidth, `final video width must be ${expectedWidth}`);
+assert.equal(videoStream.height, expectedHeight, `final video height must be ${expectedHeight}`);
 assert.equal(audioStream.codec_name, "aac", "final audio must be AAC");
 assert.equal(Number(audioStream.sample_rate), 48000, "final audio must be 48 kHz");
 assert.equal(Number(audioStream.channels), 2, "final audio must be stereo");
@@ -280,11 +315,14 @@ assert.ok(
 
 const report = {
   sourceCapture: rawVideo,
+  remuxedCapture: remuxedVideo,
   sourceDuration: rawDuration,
   sourceUniqueFrames,
   sourceUniqueFps,
   trimStart,
   timelineDuration: duration,
+  captureWidth: expectedWidth,
+  captureHeight: expectedHeight,
   rendererInfo: capture.rendererInfo,
   renderStats: capture.renderStats,
   narration: {

@@ -1,45 +1,48 @@
 {
-  "sourceCapture": "G:\\arknights\\bike\\.cache\\video\\capture\\page@f32ab9e5dc031eb35fd584f10d129abb.webm",
-  "sourceDuration": 145.16,
-  "sourceUniqueFrames": 3509,
-  "sourceUniqueFps": 24.173325985119867,
-  "trimStart": 3.5610398000000005,
-  "timelineDuration": 140.28,
+  "sourceCapture": "G:\\arknights\\bike\\.cache\\video\\capture\\wuling-perlica-demo-hd.webm",
+  "remuxedCapture": "G:\\arknights\\bike\\.cache\\video\\capture\\wuling-perlica-demo-hd-remux.webm",
+  "sourceDuration": 146.587,
+  "sourceUniqueFrames": 2839,
+  "sourceUniqueFps": 19.3673381677775,
+  "trimStart": 0,
+  "timelineDuration": 146.28,
+  "captureWidth": 1728,
+  "captureHeight": 1080,
   "rendererInfo": {
     "vendor": "Google Inc. (Intel)",
     "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x0000A7A0) Direct3D11 vs_5_0 ps_5_0, D3D11)"
   },
   "renderStats": {
-    "frames": 6060,
-    "elapsed": 140.7943999999976,
-    "averageFps": 43.041484604502045,
-    "medianGap": 16.69999999999709,
-    "p95Gap": 50,
-    "maxGap": 233.40000000000146
+    "frames": 4229,
+    "elapsed": 147.2273999999993,
+    "averageFps": 28.724272791613654,
+    "medianGap": 33.30000000000291,
+    "p95Gap": 66.60000000000036,
+    "maxGap": 650
   },
   "narration": {
     "path": "G:\\arknights\\bike\\video\\narration.wav",
-    "duration": 140.28,
-    "size": 26933838
+    "duration": 146.28,
+    "size": 28085838
   },
   "video": {
     "path": "G:\\arknights\\bike\\video\\wuling-perlica-demo.mp4",
-    "duration": 140.28,
-    "size": 92793485,
-    "bitRate": 5291901,
+    "duration": 146.282667,
+    "size": 74694379,
+    "bitRate": 4084933,
     "videoCodec": "h264",
     "audioCodec": "aac",
-    "width": 1440,
-    "height": 900,
+    "width": 1728,
+    "height": 1080,
     "frameRate": "25/1"
   },
   "scenes": [
     {
       "index": 1,
       "id": "01-intro",
-      "audioDuration": 10.72,
-      "sceneDuration": 12.520000000000001,
-      "title": "风起武陵"
+      "audioDuration": 10.16,
+      "sceneDuration": 11.96,
+      "title": "由 DeepSeek 最新模型生成"
     },
     {
       "index": 2,
@@ -100,16 +103,16 @@
     {
       "index": 10,
       "id": "10-credits",
-      "audioDuration": 13.52,
-      "sceneDuration": 14.52,
+      "audioDuration": 15.920000000000002,
+      "sceneDuration": 16.92,
       "title": "制作流程"
     },
     {
       "index": 11,
       "id": "11-outro",
-      "audioDuration": 8,
-      "sceneDuration": 9,
-      "title": "沿方兴衢，驭风而行"
+      "audioDuration": 12.16,
+      "sceneDuration": 13.16,
+      "title": "风起武陵，等你出发"
     }
   ]
 }

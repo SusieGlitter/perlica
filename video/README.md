@@ -4,8 +4,8 @@
 
 ## 成片规格
 
-- 时长：140.28 秒
-- 画面：H.264，1440 x 900，25 fps
+- 时长：146.28 秒
+- 画面：H.264，1728 x 1080，25 fps
 - 声音：AAC，48 kHz，双声道
 - 旁白母版：`narration.wav`
 - 自动验证报告：`build-report.json`
@@ -46,13 +46,16 @@ npm run capture:demo
 npm run build:video
 ```
 
-`capture-demo.mjs` 读取 `narration.json` 和每段旁白时长，按绝对时间推进 11 个镜头。
-`build_video.mjs` 生成旁白母版、循环叠加原创配乐、裁切 Playwright WebM，并输出 MP4。
+`capture-hd.mjs` 读取 `narration.json` 和每段旁白时长，按绝对时间推进 11 个镜头。
+它直接从 WebGL 和实时小地图合成画布采集 1728×1080 VP9，目标码率 18 Mbps，实际源
+码率约 10.7 Mbps，远高于旧版约 1.6 Mbps 的 Playwright 录制结果。旧流程保留在
+`capture-demo.mjs`，用于兼容排查。
+`build_video.mjs` 生成旁白母版、循环叠加原创配乐、重定时并裁切 VP9 WebM，再输出 MP4。
 
 录制脚本默认启用 ANGLE/D3D11 GPU，并拒绝 SwiftShader 软件渲染结果。最终版本使用
-Intel Iris Xe 的硬件 WebGL 采集，平均渲染帧率 43.04 fps，p95 帧间隔 50 ms；
-去重后源视频仍有 24.17 个有效变化帧/秒。`WULING_GPU_CAPTURE=0` 仅用于排查，
-不建议生成正式成片。
+Intel Iris Xe 的硬件 WebGL 与 Canvas 合成采集，平均渲染帧率 28.72 fps，p95 帧间隔
+66.6 ms，去重后源视频仍有 19.37 个有效变化帧/秒。自由骑行镜头已从南门柱附近移到
+岳研东街的宽敞路段，避免与城门柱体发生碰撞。
 
 ## 技术
 

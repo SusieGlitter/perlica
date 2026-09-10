@@ -32,11 +32,12 @@ https://susieglitter.github.io/perlica/
 
 ## 演示视频
 
-约 140 秒的《风起武陵》宣传片位于 `video/wuling-perlica-demo.mp4`，展示地图、自动巡航、
+约 146 秒的《风起武陵》宣传片位于 `video/wuling-perlica-demo.mp4`，展示地图、自动巡航、
 自由操控、单脚支撑与换腿、倒车、传动结构、城市车细节和程序化武陵场景。旁白使用 QwenTTS
 复刻公开佩丽卡中文语音片段中的音色，视频画面由 Playwright 自动录制，最终使用
-FFmpeg 合成原创配乐《武陵云道》。录制脚本会启用 ANGLE/D3D11 GPU，并在写入成片前
-检查源画面平均帧率和有效变化帧率，避免软件渲染产生重复帧和卡顿。
+FFmpeg 合成原创配乐《武陵云道》。高清录制脚本会启用 ANGLE/D3D11 GPU，直接从 WebGL
+与实时小地图合成画布采集 1728×1080、约 10.7 Mbps 的源视频，并在写入成片前检查
+平均帧率和有效变化帧率，避免软件渲染与低码率产生模糊、重复帧和卡顿。
 
 ```powershell
 python tools/generate_narration.py enroll
