@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.asset-tools/
+.cache/
+deobfuscated/
+.qa/
+.devserver.log
+.preview.log

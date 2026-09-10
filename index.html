@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="佩丽卡骑行武陵方兴衢 3D 动画，由 Three.js 实时渲染。"
+    />
+    <meta name="theme-color" content="#0b2330" />
+    <link rel="icon" href="data:," />
+    <title>风起武陵 · 佩丽卡骑行计划</title>
+  </head>
+  <body>
+    <main id="app">
+      <canvas id="scene" aria-label="佩丽卡在武陵城中骑行的三维动画"></canvas>
+
+      <div class="loading-screen" id="loading-screen" aria-live="polite">
+        <div class="loading-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="loading-copy">
+          <p class="eyebrow">ENDFIELD / WULING</p>
+          <h1>风起武陵</h1>
+          <p>正在接入骑行动线</p>
+        </div>
+        <div class="loading-track">
+          <i id="loading-bar"></i>
+        </div>
+        <span class="loading-value" id="loading-value">0%</span>
+      </div>
+
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="返回动画开头" id="brand-home">
+          <span class="brand-symbol" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </span>
+          <span>
+            <strong>ENDFIELD</strong>
+            <small>WULING RIDE PROGRAM</small>
+          </span>
+        </a>
+        <div class="topbar-status">
+          <span class="live-dot"></span>
+          <span>实时路线</span>
+          <span class="status-divider"></span>
+          <time id="local-time">07:30</time>
+          <span class="status-divider"></span>
+          <span class="track-title">配乐 · 武陵云道</span>
+        </div>
+      </header>
+
+      <aside class="minimap-panel" aria-label="方兴衢实时位置">
+        <div class="minimap-heading">
+          <span>武陵 · 方兴衢</span>
+          <strong>M-01</strong>
+        </div>
+        <canvas id="minimap" aria-label="方兴衢骑行小地图"></canvas>
+        <div class="minimap-coordinate" id="minimap-coordinate">X +00.0 / Z +08.0</div>
+      </aside>
+
+      <section class="hero-copy" aria-labelledby="hero-title">
+        <div class="coordinate">29°31'N / 107°44'E</div>
+        <p class="eyebrow">FANGXING RIDE WEEK · 2026</p>
+        <h1 id="hero-title">风起武陵</h1>
+        <p class="hero-subtitle">沿方兴衢，驭风而行</p>
+        <div class="slogan-rule"></div>
+        <p class="hero-slogan">把武陵的晨雾，骑成下一程晴空。</p>
+        <button class="primary-action" id="start-ride" type="button">
+          <span>开始骑行</span>
+          <span class="action-arrow" aria-hidden="true"></span>
+        </button>
+      </section>
+
+      <aside class="route-panel" aria-label="骑行路线">
+        <div class="route-heading">
+          <span>骑行动线</span>
+          <strong>W-01</strong>
+        </div>
+        <ol id="route-stops">
+          <li data-stop="0" class="active">
+            <i></i>
+            <span><b>方兴衢南街</b><small>FANGXING SOUTH</small></span>
+          </li>
+          <li data-stop="1">
+            <i></i>
+            <span><b>岳研东街</b><small>YUEYAN EAST</small></span>
+          </li>
+          <li data-stop="2">
+            <i></i>
+            <span><b>方兴衢北庭</b><small>FANGXING NORTH</small></span>
+          </li>
+          <li data-stop="3">
+            <i></i>
+            <span><b>武陵驿西巷</b><small>WULING POST WEST</small></span>
+          </li>
+          <li data-stop="4">
+            <i></i>
+            <span><b>骑行集结点</b><small>RIDE ASSEMBLY</small></span>
+          </li>
+        </ol>
+      </aside>
+
+      <div class="telemetry" aria-label="骑行数据">
+        <div class="telemetry-item">
+          <small>速度</small>
+          <strong><span id="telemetry-speed">18.6</span><em>km/h</em></strong>
+        </div>
+        <div class="telemetry-item">
+          <small>里程</small>
+          <strong><span id="telemetry-distance">0.0</span><em>km</em></strong>
+        </div>
+        <div class="telemetry-item telemetry-elevation">
+          <small>海拔</small>
+          <strong><span id="telemetry-elevation">1,020</span><em>m</em></strong>
+        </div>
+        <div class="telemetry-item">
+          <small>模式</small>
+          <strong><span id="telemetry-mode">巡游</span></strong>
+        </div>
+        <div class="telemetry-item">
+          <small>状态</small>
+          <strong><span id="telemetry-state">巡航</span></strong>
+        </div>
+      </div>
+
+      <div class="location-card" id="location-card">
+        <span class="location-index">01</span>
+        <div>
+          <small>NOW PASSING</small>
+          <strong id="location-name">方兴衢南街</strong>
+          <p id="location-note">从城南市集出发，沿宽阔石路向东骑行。</p>
+        </div>
+      </div>
+
+      <div class="world-labels" id="world-labels" aria-hidden="true"></div>
+
+      <div class="touch-ride" id="touch-ride" aria-label="自由骑行触控">
+        <button data-touch="left" type="button" aria-label="向左">
+          <i data-lucide="chevron-left"></i>
+        </button>
+        <button data-touch="brake" type="button" aria-label="刹车">
+          <i data-lucide="circle-stop"></i>
+        </button>
+        <button class="touch-reverse" data-touch="reverse" type="button" aria-label="倒车">
+          <i data-lucide="arrow-down"></i>
+        </button>
+        <button data-touch="right" type="button" aria-label="向右">
+          <i data-lucide="chevron-right"></i>
+        </button>
+        <button class="touch-throttle" data-touch="throttle" type="button" aria-label="加速">
+          <i data-lucide="gauge"></i>
+        </button>
+      </div>
+
+      <div class="mode-control mobile-mode-control" role="group" aria-label="骑行模式">
+        <span>模式</span>
+        <div class="segmented">
+          <button data-mode="auto" class="active" type="button">巡游</button>
+          <button data-mode="free" type="button">自由</button>
+        </div>
+      </div>
+
+      <footer class="controls">
+        <div class="control-main">
+          <button
+            class="control-button control-button-primary"
+            id="play-toggle"
+            type="button"
+            aria-label="暂停"
+            data-tooltip="暂停"
+          >
+            <i data-lucide="pause"></i>
+          </button>
+          <div class="progress-block">
+            <div class="progress-copy">
+              <span id="progress-label">方兴衢南街</span>
+              <strong id="progress-value">0%</strong>
+            </div>
+            <div class="progress-track">
+              <i id="progress-fill"></i>
+              <button id="progress-thumb" type="button" aria-label="拖动调整路线进度"></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="camera-controls" role="group" aria-label="镜头模式">
+          <button class="camera-button active" data-camera="chase" type="button" aria-label="跟随镜头" data-tooltip="跟随镜头">
+            <i data-lucide="route"></i>
+            <span>跟随</span>
+          </button>
+          <button class="camera-button" data-camera="low" type="button" aria-label="低机位" data-tooltip="低机位">
+            <i data-lucide="camera"></i>
+            <span>低机位</span>
+          </button>
+          <button class="camera-button" data-camera="cinema" type="button" aria-label="远景镜头" data-tooltip="远景镜头">
+            <i data-lucide="scan-eye"></i>
+            <span>远景</span>
+          </button>
+        </div>
+
+        <div class="mode-control" role="group" aria-label="骑行模式">
+          <span>模式</span>
+          <div class="segmented">
+            <button data-mode="auto" class="active" type="button">巡游</button>
+            <button data-mode="free" type="button">自由</button>
+          </div>
+        </div>
+
+        <div class="speed-control" role="group" aria-label="骑行速度">
+          <span>节奏</span>
+          <div class="segmented">
+            <button data-speed="0.65" type="button">缓行</button>
+            <button data-speed="1" class="active" type="button">巡航</button>
+            <button data-speed="1.5" type="button">疾风</button>
+          </div>
+        </div>
+
+        <button
+          class="sound-button"
+          id="sound-toggle"
+          type="button"
+          aria-label="开启原创配乐"
+          data-tooltip="武陵云道"
+        >
+          <i data-lucide="volume-x"></i>
+        </button>
+      </footer>
+
+      <div class="wind-streak streak-a"></div>
+      <div class="wind-streak streak-b"></div>
+      <div class="grain" aria-hidden="true"></div>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
