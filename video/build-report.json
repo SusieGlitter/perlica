@@ -1,11 +1,11 @@
 {
   "sourceCapture": "G:\\arknights\\bike\\.cache\\video\\capture\\wuling-perlica-demo-hd.webm",
   "remuxedCapture": "G:\\arknights\\bike\\.cache\\video\\capture\\wuling-perlica-demo-hd-remux.webm",
-  "sourceDuration": 146.587,
-  "sourceUniqueFrames": 2839,
-  "sourceUniqueFps": 19.3673381677775,
+  "sourceDuration": 145.366,
+  "sourceUniqueFrames": 3852,
+  "sourceUniqueFps": 26.4986310416466,
   "trimStart": 0,
-  "timelineDuration": 146.28,
+  "timelineDuration": 144.92000000000002,
   "captureWidth": 1728,
   "captureHeight": 1080,
   "rendererInfo": {
@@ -13,23 +13,1351 @@
     "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x0000A7A0) Direct3D11 vs_5_0 ps_5_0, D3D11)"
   },
   "renderStats": {
-    "frames": 4229,
-    "elapsed": 147.2273999999993,
-    "averageFps": 28.724272791613654,
-    "medianGap": 33.30000000000291,
-    "p95Gap": 66.60000000000036,
-    "maxGap": 650
+    "frames": 5840,
+    "elapsed": 145.69419999999727,
+    "averageFps": 40.08395667089088,
+    "medianGap": 16.69999999999709,
+    "p95Gap": 49.899999999999636,
+    "maxGap": 800
   },
+  "viewChecks": [
+    {
+      "label": "intro-parked",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": -29.984925228405846,
+              "y": 1.5398557587056363,
+              "z": 74.35557205284928
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.679024188402023,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -29.984925228405846,
+              "y": 2.0198557587056363,
+              "z": 74.35557205284928
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.581362191854254,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -29.984925228405846,
+              "y": 2.4698557587056365,
+              "z": 74.35557205284928
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.534260242770672,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 48.7654415441228
+      },
+      "clear": true
+    },
+    {
+      "label": "intro-ride",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": 5.196061907158432,
+              "y": 1.52,
+              "z": 8.13536351326673
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.964946120229426,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 5.196061907158432,
+              "y": 2,
+              "z": 8.13536351326673
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.865765799058833,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 5.196061907158432,
+              "y": 2.45,
+              "z": 8.13536351326673
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.814571836481748,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 61.19812559633598
+      },
+      "clear": true
+    },
+    {
+      "label": "map-cinema",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": 37.299582508094105,
+              "y": 1.52,
+              "z": 30.7151531993438
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 10.196154692169822,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 37.299582508094105,
+              "y": 2,
+              "z": 30.7151531993438
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 10.045794731720495,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 37.299582508094105,
+              "y": 2.45,
+              "z": 30.7151531993438
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 9.923867025849571,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 55.26645937345983
+      },
+      "clear": true
+    },
+    {
+      "label": "auto-chase",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": 37.270015481148086,
+              "y": 1.52,
+              "z": 62.07863027562651
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.141364262342355,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 37.270015481148086,
+              "y": 2,
+              "z": 62.07863027562651
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.034970491012116,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 37.270015481148086,
+              "y": 2.45,
+              "z": 62.07863027562651
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.9753791691870015,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 60.0115736182904
+      },
+      "clear": true
+    },
+    {
+      "label": "auto-chase:live",
+      "usedFallback": "front",
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": 10.878112429438133,
+              "y": 1.52,
+              "z": 70.42615439928217
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 3.583667871574093,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 10.878112429438133,
+              "y": 2,
+              "z": 70.42615439928217
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 3.4487083385724504,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 10.878112429438133,
+              "y": 2.45,
+              "z": 70.42615439928217
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 3.379692424378547,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 60.27437202270391
+      },
+      "clear": true,
+      "trigger": {
+        "diagnostics": {
+          "cameraInsideObstacle": true,
+          "blockedRays": 3,
+          "forwardBlockedRays": 3,
+          "bikeOccluded": true,
+          "clear": false,
+          "rayResults": [
+            {
+              "target": {
+                "x": 13.404140884574712,
+                "y": 1.52,
+                "z": 70.49232131727884
+              },
+              "blocked": true,
+              "hitName": "fangxing-district",
+              "hitDistance": 0.26098049699193865,
+              "distance": 5.7693682026794235,
+              "forwardBlocked": true,
+              "reverseBlocked": true
+            },
+            {
+              "target": {
+                "x": 13.404140884574712,
+                "y": 2,
+                "z": 70.49232131727884
+              },
+              "blocked": true,
+              "hitName": "fangxing-district",
+              "hitDistance": 0.25739357081814274,
+              "distance": 5.69007378010387,
+              "forwardBlocked": true,
+              "reverseBlocked": true
+            },
+            {
+              "target": {
+                "x": 13.404140884574712,
+                "y": 2.45,
+                "z": 70.49232131727884
+              },
+              "blocked": true,
+              "hitName": "fangxing-district",
+              "hitDistance": 0.2556651106132402,
+              "distance": 5.6518635557357655,
+              "forwardBlocked": true,
+              "reverseBlocked": true
+            }
+          ]
+        },
+        "visual": {
+          "frameVariance": 0.5357968145905772
+        }
+      }
+    },
+    {
+      "label": "free-chase",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": 8.562427413334612,
+              "y": 1.5398407480478884,
+              "z": 8
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.6950064780769285,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 8.562427413334612,
+              "y": 2.0198407480478884,
+              "z": 8
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.6154408332816175,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 8.562427413334612,
+              "y": 2.4698407480478886,
+              "z": 8
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.5774544290754315,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 60.38857806738989
+      },
+      "clear": true
+    },
+    {
+      "label": "support-left",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 3,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": -29.929774129936213,
+              "y": 1.5354041658502071,
+              "z": 74.35234620158147
+            },
+            "blocked": true,
+            "hitName": "wuling-city-wall",
+            "hitDistance": 0.8859384913954079,
+            "distance": 2.55787214836413,
+            "forwardBlocked": false,
+            "reverseBlocked": true
+          },
+          {
+            "target": {
+              "x": -29.929774129936213,
+              "y": 2.015404165850207,
+              "z": 74.35234620158147
+            },
+            "blocked": true,
+            "hitName": "wuling-city-wall",
+            "hitDistance": 0.8638432098023211,
+            "distance": 2.494078887380287,
+            "forwardBlocked": false,
+            "reverseBlocked": true
+          },
+          {
+            "target": {
+              "x": -29.929774129936213,
+              "y": 2.4654041658502073,
+              "z": 74.35234620158147
+            },
+            "blocked": true,
+            "hitName": "wuling-city-wall",
+            "hitDistance": 0.8718854893852793,
+            "distance": 2.517298471080963,
+            "forwardBlocked": false,
+            "reverseBlocked": true
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 81.97900211304515
+      },
+      "clear": true
+    },
+    {
+      "label": "support-right",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": -28.94422649436701,
+              "y": 1.539999999977913,
+              "z": 74.29470038530697
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 2.534730163665018,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -28.94422649436701,
+              "y": 2.0199999999779132,
+              "z": 74.29470038530697
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 2.4336544687754382,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -28.94422649436701,
+              "y": 2.4699999999779134,
+              "z": 74.29470038530697
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 2.4228862080715214,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 69.63181698753472
+      },
+      "clear": true
+    },
+    {
+      "label": "reverse-low",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": -44,
+              "y": 1.5398493909280129,
+              "z": 47.10202228936723
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 3.424053746015124,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -44,
+              "y": 2.019849390928013,
+              "z": 47.10202228936723
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 3.3195229040548053,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -44,
+              "y": 2.469849390928013,
+              "z": 47.10202228936723
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 3.282815491244471,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 63.81969507677418
+      },
+      "clear": true
+    },
+    {
+      "label": "drivetrain-low",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": -45.30288184198011,
+              "y": 1.52,
+              "z": 10.52192846150663
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.0830021268321905,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -45.30288184198011,
+              "y": 2,
+              "z": 10.52192846150663
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.04115393008335,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -45.30288184198011,
+              "y": 2.45,
+              "z": 10.52192846150663
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.053479077978328,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 62.116805316363866
+      },
+      "clear": true
+    },
+    {
+      "label": "drivetrain-low:live",
+      "usedFallback": "front",
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": -19.80361719706109,
+              "y": 1.52,
+              "z": 11.460533065183219
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 3.5559577368842423,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -19.80361719706109,
+              "y": 2,
+              "z": 11.460533065183219
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 3.4203870961393186,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -19.80361719706109,
+              "y": 2.45,
+              "z": 11.460533065183219
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 3.351249329661661,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 72.49462686501528
+      },
+      "clear": true,
+      "trigger": {
+        "diagnostics": {
+          "cameraInsideObstacle": true,
+          "blockedRays": 3,
+          "forwardBlockedRays": 3,
+          "bikeOccluded": true,
+          "clear": false,
+          "rayResults": [
+            {
+              "target": {
+                "x": -22.639516347051195,
+                "y": 1.52,
+                "z": 11.240615808628462
+              },
+              "blocked": true,
+              "hitName": "fangxing-district",
+              "hitDistance": 0.21196252367847446,
+              "distance": 4.541318203810268,
+              "forwardBlocked": true,
+              "reverseBlocked": true
+            },
+            {
+              "target": {
+                "x": -22.639516347051195,
+                "y": 2,
+                "z": 11.240615808628462
+              },
+              "blocked": true,
+              "hitName": "fangxing-district",
+              "hitDistance": 0.20902406612902508,
+              "distance": 4.478361457830583,
+              "forwardBlocked": true,
+              "reverseBlocked": true
+            },
+            {
+              "target": {
+                "x": -22.639516347051195,
+                "y": 2.45,
+                "z": 11.240615808628462
+              },
+              "blocked": true,
+              "hitName": "fangxing-district",
+              "hitDistance": 0.20842989250556482,
+              "distance": 4.465631228705094,
+              "forwardBlocked": true,
+              "reverseBlocked": true
+            }
+          ]
+        },
+        "visual": {
+          "frameVariance": 0
+        }
+      }
+    },
+    {
+      "label": "drivetrain-chase",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": -16.63588892203734,
+              "y": 1.52,
+              "z": 11.625115317403802
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 3.552860973414166,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -16.63588892203734,
+              "y": 2,
+              "z": 11.625115317403802
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 3.416902149057988,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -16.63588892203734,
+              "y": 2.45,
+              "z": 11.625115317403802
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 3.3474385051969975,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 73.23752558784054
+      },
+      "clear": true
+    },
+    {
+      "label": "details-low",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": -44.452358551276824,
+              "y": 1.52,
+              "z": 16.31099804506062
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.087377380877633,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -44.452358551276824,
+              "y": 2,
+              "z": 16.31099804506062
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.0113281411490975,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -44.452358551276824,
+              "y": 2.45,
+              "z": 16.31099804506062
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 3.991471762783463,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 59.30338840922809
+      },
+      "clear": true
+    },
+    {
+      "label": "details-chase",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": -27.19421822782734,
+              "y": 1.52,
+              "z": 11.477301760033553
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.26731344658741,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -27.19421822782734,
+              "y": 2,
+              "z": 11.477301760033553
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.180446057582754,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -27.19421822782734,
+              "y": 2.45,
+              "z": 11.477301760033553
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.138547933586499,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 60.1706516628006
+      },
+      "clear": true
+    },
+    {
+      "label": "details-chase:live",
+      "usedFallback": "left",
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": -7.036946134900168,
+              "y": 1.52,
+              "z": 11.868853983269199
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.7641357712813175,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -7.036946134900168,
+              "y": 2,
+              "z": 11.868853983269199
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.673806570433122,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": -7.036946134900168,
+              "y": 2.45,
+              "z": 11.868853983269199
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.632896359760443,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 59.15165012309067
+      },
+      "clear": true,
+      "trigger": {
+        "diagnostics": {
+          "cameraInsideObstacle": false,
+          "blockedRays": 0,
+          "forwardBlockedRays": 0,
+          "bikeOccluded": false,
+          "clear": true,
+          "rayResults": [
+            {
+              "target": {
+                "x": -9.625613399155617,
+                "y": 1.52,
+                "z": 11.860490586816132
+              },
+              "blocked": false,
+              "hitName": null,
+              "hitDistance": null,
+              "distance": 5.40097123238229,
+              "forwardBlocked": false,
+              "reverseBlocked": false
+            },
+            {
+              "target": {
+                "x": -9.625613399155617,
+                "y": 2,
+                "z": 11.860490586816132
+              },
+              "blocked": false,
+              "hitName": null,
+              "hitDistance": null,
+              "distance": 5.316748975933687,
+              "forwardBlocked": false,
+              "reverseBlocked": false
+            },
+            {
+              "target": {
+                "x": -9.625613399155617,
+                "y": 2.45,
+                "z": 11.860490586816132
+              },
+              "blocked": false,
+              "hitName": null,
+              "hitDistance": null,
+              "distance": 5.2763686380320625,
+              "forwardBlocked": false,
+              "reverseBlocked": false
+            }
+          ]
+        },
+        "visual": {
+          "frameVariance": 0.000006171311905643837
+        }
+      }
+    },
+    {
+      "label": "world-start",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": 18.00164096501979,
+              "y": 1.52,
+              "z": 7.2411440508958105
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.805183354581316,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 18.00164096501979,
+              "y": 2,
+              "z": 7.2411440508958105
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.7204580219771,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 18.00164096501979,
+              "y": 2.45,
+              "z": 7.2411440508958105
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.68450661748056,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 54.95677619269464
+      },
+      "clear": true
+    },
+    {
+      "label": "world-finish",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": 38.07950206681601,
+              "y": 1.52,
+              "z": 28.36974600802732
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.264948783328453,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 38.07950206681601,
+              "y": 2,
+              "z": 28.36974600802732
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.193553581894113,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 38.07950206681601,
+              "y": 2.45,
+              "z": 28.36974600802732
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.166379762960737,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 62.5217474895891
+      },
+      "clear": true
+    },
+    {
+      "label": "credits-start",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": 7.870993796922092,
+              "y": 1.5398511427857988,
+              "z": 8
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.157304352548671,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 7.870993796922092,
+              "y": 2.019851142785799,
+              "z": 8
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.067397164372252,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 7.870993796922092,
+              "y": 2.469851142785799,
+              "z": 8
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 5.02346439156948,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 60.112228443963424
+      },
+      "clear": true
+    },
+    {
+      "label": "credits-finish",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": 57.28050875637972,
+              "y": 1.54,
+              "z": 8
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.667098288451748,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 57.28050875637972,
+              "y": 2.02,
+              "z": 8
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.560298189673651,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 57.28050875637972,
+              "y": 2.47,
+              "z": 8
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.50454499942784,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 56.852252295214406
+      },
+      "clear": true
+    },
+    {
+      "label": "outro-chase",
+      "usedFallback": null,
+      "diagnostics": {
+        "cameraInsideObstacle": false,
+        "blockedRays": 0,
+        "forwardBlockedRays": 0,
+        "bikeOccluded": false,
+        "clear": true,
+        "rayResults": [
+          {
+            "target": {
+              "x": 8.221756193055905,
+              "y": 1.52,
+              "z": 8
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.926000765968717,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 8.221756193055905,
+              "y": 2,
+              "z": 8
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.8434578088721265,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          },
+          {
+            "target": {
+              "x": 8.221756193055905,
+              "y": 2.45,
+              "z": 8
+            },
+            "blocked": false,
+            "hitName": null,
+            "hitDistance": null,
+            "distance": 4.808490776358459,
+            "forwardBlocked": false,
+            "reverseBlocked": false
+          }
+        ]
+      },
+      "visual": {
+        "frameVariance": 62.58752026454362
+      },
+      "clear": true
+    }
+  ],
+  "motionChecks": [
+    {
+      "label": "free-start",
+      "time": 44096.5,
+      "x": 9.171419284627532,
+      "z": 8,
+      "speed": 6.188476356684115,
+      "collisionPulse": 0,
+      "nearestDistance": 0.11913534997384012
+    },
+    {
+      "label": "free-mid",
+      "time": 47171.59999999404,
+      "x": 34.39180550123304,
+      "z": 8,
+      "speed": 8.4,
+      "collisionPulse": 0,
+      "nearestDistance": 0.7128304945755344
+    },
+    {
+      "label": "free-brake",
+      "time": 49459.70000000298,
+      "x": 35.970660738770825,
+      "z": 8,
+      "speed": -1.45,
+      "collisionPulse": 0,
+      "nearestDistance": 0.618177054807406
+    },
+    {
+      "label": "free-stop",
+      "time": 51447.79999999702,
+      "x": 33.72419297108059,
+      "z": 8,
+      "speed": -0.8578846282612118,
+      "collisionPulse": 0,
+      "nearestDistance": 0.7390836390063666
+    },
+    {
+      "label": "free-finish",
+      "time": 54173.5,
+      "x": 32.687432094512204,
+      "z": 8,
+      "speed": -0.0002687922480990555,
+      "collisionPulse": 0,
+      "nearestDistance": 0.7701607559991969
+    }
+  ],
   "narration": {
     "path": "G:\\arknights\\bike\\video\\narration.wav",
-    "duration": 146.28,
-    "size": 28085838
+    "duration": 144.92,
+    "size": 27824718
   },
   "video": {
     "path": "G:\\arknights\\bike\\video\\wuling-perlica-demo.mp4",
-    "duration": 146.282667,
-    "size": 74694379,
-    "bitRate": 4084933,
+    "duration": 144.92,
+    "size": 79576760,
+    "bitRate": 4392865,
     "videoCodec": "h264",
     "audioCodec": "aac",
     "width": 1728,
@@ -40,9 +1368,9 @@
     {
       "index": 1,
       "id": "01-intro",
-      "audioDuration": 10.16,
-      "sceneDuration": 11.96,
-      "title": "由 DeepSeek 最新模型生成"
+      "audioDuration": 10.96,
+      "sceneDuration": 12.760000000000002,
+      "title": "由 DeepSeek-v4.1-flash 生成"
     },
     {
       "index": 2,
@@ -61,8 +1389,8 @@
     {
       "index": 4,
       "id": "04-free",
-      "audioDuration": 13.6,
-      "sceneDuration": 14.6,
+      "audioDuration": 10.32,
+      "sceneDuration": 11.32,
       "title": "自由操控"
     },
     {
@@ -103,8 +1431,8 @@
     {
       "index": 10,
       "id": "10-credits",
-      "audioDuration": 15.920000000000002,
-      "sceneDuration": 16.92,
+      "audioDuration": 17.04,
+      "sceneDuration": 18.04,
       "title": "制作流程"
     },
     {

@@ -3,7 +3,7 @@
   "segments": [
     {
       "id": "01-intro",
-      "text": "本项目由 DeepSeek 最新模型生成。欢迎来到武陵骑行活动。佩丽卡已经就位，接下来由她带你穿过山水相拥的方兴衢。"
+      "text": "本项目由 DeepSeek-v4.1-flash 生成。欢迎来到武陵骑行活动。佩丽卡已经就位，接下来由她带你穿过山水相拥的方兴衢。"
     },
     {
       "id": "02-map",
@@ -15,7 +15,7 @@
     },
     {
       "id": "04-free",
-      "text": "切换到自由模式后，WASD 或方向键就能亲自接管。A 和 D 控制左右转向，Shift 提速，车把、前轮、车架和骑手重心会同步响应。"
+      "text": "切换到自由模式后，W 或方向键即可接管前进，Shift 提速，空格制动。车速、踩踏、悬挂和骑手重心会同步响应。"
     },
     {
       "id": "05-brake",
@@ -39,7 +39,7 @@
     },
     {
       "id": "10-credits",
-      "text": "本项目由 DeepSeek 最新模型生成，Codex 自动化完成录制与剪辑。流程包括 Playwright 分镜、Three.js 骨骼 IK、PID 循迹、QwenTTS 声音复刻，以及 FFmpeg 音画合成。"
+      "text": "本项目由 DeepSeek-v4.1-flash 生成，Codex 自动化完成录制与剪辑。流程包括 Playwright 分镜、Three.js 骨骼 IK、PID 循迹、QwenTTS 声音复刻，以及 FFmpeg 音画合成。"
     },
     {
       "id": "11-outro",

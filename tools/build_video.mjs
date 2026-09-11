@@ -38,6 +38,17 @@ assert.ok(
   capture.renderStats?.averageFps >= 24,
   "capture report must confirm a GPU-rendered source above 24 fps",
 );
+assert.ok(
+  capture.viewChecks?.length > 0
+    && capture.viewChecks.every(
+      (check) => check.clear ?? check.diagnostics.clear,
+    ),
+  "all camera views must pass occlusion checks",
+);
+assert.ok(
+  capture.motionChecks?.length >= 4,
+  "free ride must include motion and collision samples",
+);
 
 const rawVideo = capture.recordedPath;
 const trimStart = Math.max(0, capture.setupSeconds - 0.05);
@@ -325,6 +336,8 @@ const report = {
   captureHeight: expectedHeight,
   rendererInfo: capture.rendererInfo,
   renderStats: capture.renderStats,
+  viewChecks: capture.viewChecks,
+  motionChecks: capture.motionChecks,
   narration: {
     path: narrationOutput,
     duration: Number.parseFloat(narrationProbe.format.duration),

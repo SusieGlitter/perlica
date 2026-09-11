@@ -66,6 +66,10 @@ const scenes = segments.map((segment, index) => ({
   duration: segment.duration + gapSeconds + (index === 0 ? leadSeconds : 0),
 }));
 const smokeSeconds = Number.parseFloat(process.env.WULING_CAPTURE_SECONDS ?? "0");
+const sceneLimit = Number.parseInt(process.env.WULING_SCENE_LIMIT ?? "0", 10);
+if (sceneLimit > 0) {
+  scenes.splice(sceneLimit);
+}
 if (smokeSeconds > 0) {
   scenes.splice(1);
   scenes[0].duration = Math.min(scenes[0].duration, smokeSeconds);
@@ -296,6 +300,13 @@ await page.evaluate(({ width, height, bitsPerSecond }) => {
     alpha: false,
     desynchronized: true,
   });
+  const visualCanvas = document.createElement("canvas");
+  visualCanvas.width = 192;
+  visualCanvas.height = 120;
+  const visualContext = visualCanvas.getContext("2d", {
+    alpha: false,
+    willReadFrequently: true,
+  });
 
   const state = {
     caption: {
@@ -306,9 +317,11 @@ await page.evaluate(({ width, height, bitsPerSecond }) => {
     },
     focusMode: false,
     supportCue: null,
+    frameVariance: 255,
   };
   const deltas = [];
   let previousFrame = 0;
+  let previousVisualSample = 0;
   let recording = false;
   let recorder = null;
   let stream = null;
@@ -414,12 +427,8 @@ await page.evaluate(({ width, height, bitsPerSecond }) => {
     if (style === "title") {
       const panelWidth = 1040;
       const panelHeight = subtitle.includes("https://") ? 300 : 276;
-      const x = style === "title" && subtitle.includes("https://")
-        ? (width - panelWidth) / 2
-        : 92;
-      const y = style === "title" && subtitle.includes("https://")
-        ? (height - panelHeight) / 2
-        : 172;
+      const x = (width - panelWidth) / 2;
+      const y = (height - panelHeight) / 2;
       panel(x, y, panelWidth, panelHeight, "#70eedd");
       context.fillStyle = "#70eedd";
       context.font = "800 22px 'Bahnschrift', sans-serif";
@@ -454,6 +463,43 @@ await page.evaluate(({ width, height, bitsPerSecond }) => {
     if (previousFrame) deltas.push(time - previousFrame);
     previousFrame = time;
     context.drawImage(sceneCanvas, 0, 0, width, height);
+    if (time - previousVisualSample >= 500) {
+      previousVisualSample = time;
+      visualContext.drawImage(
+        compositor,
+        width * 0.27,
+        height * 0.24,
+        width * 0.46,
+        height * 0.44,
+        0,
+        0,
+        visualCanvas.width,
+        visualCanvas.height,
+      );
+      const pixels = visualContext.getImageData(
+        0,
+        0,
+        visualCanvas.width,
+        visualCanvas.height,
+      ).data;
+      let sum = 0;
+      let sumSquares = 0;
+      let count = 0;
+      for (let index = 0; index < pixels.length; index += 16) {
+        const luminance = (
+          pixels[index] * 0.2126
+          + pixels[index + 1] * 0.7152
+          + pixels[index + 2] * 0.0722
+        );
+        sum += luminance;
+        sumSquares += luminance * luminance;
+        count++;
+      }
+      const mean = sum / Math.max(1, count);
+      state.frameVariance = Math.sqrt(
+        Math.max(0, sumSquares / Math.max(1, count) - mean * mean),
+      );
+    }
     const shade = context.createLinearGradient(0, height * 0.48, 0, height);
     shade.addColorStop(0, "rgba(1, 13, 18, 0)");
     shade.addColorStop(1, "rgba(1, 13, 18, .34)");
@@ -477,6 +523,11 @@ await page.evaluate(({ width, height, bitsPerSecond }) => {
     },
     setFocusMode(value) {
       state.focusMode = value;
+    },
+    getVisualDiagnostics() {
+      return {
+        frameVariance: state.frameVariance,
+      };
     },
     async startRecording() {
       stream = compositor.captureStream(60);
@@ -542,9 +593,121 @@ async function setFocusMode(active) {
   }, active);
 }
 
+const viewChecks = [];
+const motionChecks = [];
+let activeViewGuard = null;
+const fallbackRigs = {
+  left: {
+    position: [3.4, 1.55, -2.2],
+    target: [0, 0.82, 1],
+  },
+  right: {
+    position: [-3.4, 1.55, -2.2],
+    target: [0, 0.82, 1],
+  },
+  front: {
+    position: [0.8, 1.65, 4.2],
+    target: [0, 0.88, 0.2],
+  },
+};
+
+async function ensureClearView(label, fallback = "left") {
+  await page.waitForTimeout(520);
+  let diagnostics = await page.evaluate(() => window.__WULING_DEBUG__.getViewDiagnostics());
+  let visual = await page.evaluate(() => window.__HD_DEMO__.getVisualDiagnostics());
+  let usedFallback = null;
+  if (!diagnostics.clear || visual.frameVariance < 12) {
+    usedFallback = fallback;
+    const rig = fallbackRigs[fallback];
+    await page.evaluate((value) => {
+      window.__WULING_DEBUG__.setCameraRig(value.position, value.target);
+    }, rig);
+    await page.waitForTimeout(520);
+    diagnostics = await page.evaluate(() => window.__WULING_DEBUG__.getViewDiagnostics());
+    visual = await page.evaluate(() => window.__HD_DEMO__.getVisualDiagnostics());
+  }
+  const clear = diagnostics.clear && visual.frameVariance >= 12;
+  viewChecks.push({ label, usedFallback, diagnostics, visual, clear });
+  if (!clear) {
+    throw new Error(
+      `camera view remains occluded: ${label} ${JSON.stringify({ diagnostics, visual })}`,
+    );
+  }
+  activeViewGuard = { label, fallback };
+}
+
+async function sampleFreeMotion(label) {
+  const sample = await page.evaluate((sampleLabel) => {
+    const debug = window.__WULING_DEBUG__;
+    return {
+      label: sampleLabel,
+      time: performance.now(),
+      x: debug.freeRide.position.x,
+      z: debug.freeRide.position.z,
+      speed: debug.freeRide.speed,
+      collisionPulse: debug.freeRide.collisionPulse,
+      nearestDistance: debug.freeRide.nearestDistance,
+    };
+  }, label);
+  const previous = motionChecks.at(-1);
+  motionChecks.push(sample);
+  if (
+    previous
+    && sample.time - previous.time >= 700
+    && (
+      (
+        sample.speed > 2
+        && Math.hypot(sample.x - previous.x, sample.z - previous.z) < 0.55
+      )
+      || (
+        sample.speed < 0.9
+        && sample.collisionPulse > 0.5
+      )
+    )
+  ) {
+    throw new Error(`free ride appears stuck at ${label}: ${JSON.stringify({ previous, sample })}`);
+  }
+  return sample;
+}
+
 async function waitForTimestamp(timestamp) {
-  const remaining = timestamp - performance.now();
-  if (remaining > 0) await page.waitForTimeout(remaining);
+  while (performance.now() < timestamp) {
+    const remaining = timestamp - performance.now();
+    if (remaining <= 0) break;
+    await page.waitForTimeout(Math.min(500, remaining));
+    if (!activeViewGuard) continue;
+    const visual = await page.evaluate(() => window.__HD_DEMO__.getVisualDiagnostics());
+    if (visual.frameVariance >= 12) continue;
+    const diagnostics = await page.evaluate(
+      () => window.__WULING_DEBUG__.getViewDiagnostics(),
+    );
+    const rig = fallbackRigs[activeViewGuard.fallback];
+    await page.evaluate((value) => {
+      window.__WULING_DEBUG__.setCameraRig(value.position, value.target);
+    }, rig);
+    await page.waitForTimeout(520);
+    const fallbackDiagnostics = await page.evaluate(
+      () => window.__WULING_DEBUG__.getViewDiagnostics(),
+    );
+    const fallbackVisual = await page.evaluate(
+      () => window.__HD_DEMO__.getVisualDiagnostics(),
+    );
+    const clear = fallbackDiagnostics.clear && fallbackVisual.frameVariance >= 12;
+    viewChecks.push({
+      label: `${activeViewGuard.label}:live`,
+      usedFallback: activeViewGuard.fallback,
+      diagnostics: fallbackDiagnostics,
+      visual: fallbackVisual,
+      clear,
+      trigger: { diagnostics, visual },
+    });
+    if (!clear) {
+      throw new Error(
+        `live camera view remains occluded: ${activeViewGuard.label} `
+          + JSON.stringify({ fallbackDiagnostics, fallbackVisual }),
+      );
+    }
+  }
 }
 
 async function resetFreeRide(routeT) {
@@ -557,15 +720,56 @@ async function resetFreeRide(routeT) {
   }, routeT);
 }
 
+async function startWorldOrbit(durationSeconds) {
+  await page.evaluate((duration) => {
+    window.__WULING_DEBUG__.startWorldOrbit({
+      center: [0, 0, 41],
+      target: [0, 5.5, 41],
+      radius: 92,
+      height: 54,
+      startAngle: 0.65,
+      duration,
+    });
+  }, durationSeconds);
+}
+
+async function stopWorldOrbit() {
+  await page.evaluate(() => window.__WULING_DEBUG__.stopWorldOrbit());
+}
+
 const sceneRunners = [
   async (sceneStart, duration) => {
     await evaluate(() => {
       const debug = window.__WULING_DEBUG__;
       debug.setRideMode("auto");
       debug.setRouteT(0.018);
-      debug.setCamera("chase");
-      debug.setCameraOffset(0.1, 0);
     });
+    await startWorldOrbit((duration * 0.58) / 1000);
+    await waitForTimestamp(sceneStart + duration * 0.28);
+    await setOverlay(0, "caption", "", "");
+    await waitForTimestamp(sceneStart + duration * 0.58);
+    await stopWorldOrbit();
+    await evaluate(() => {
+      const debug = window.__WULING_DEBUG__;
+      debug.setRideMode("auto");
+      debug.setRouteT(0.58);
+      debug.setRideMode("free");
+      debug.freeRide.speed = 0;
+      debug.freeRide.footDown = 0;
+      debug.keys.clear();
+      debug.setCamera("chase");
+    });
+    await setOverlay(0, "caption", "佩丽卡已就位", "方兴衢起点 · 准备开始骑行");
+    await ensureClearView("intro-parked", "left");
+    await waitForTimestamp(sceneStart + duration * 0.78);
+    await evaluate(() => {
+      const debug = window.__WULING_DEBUG__;
+      debug.setRideMode("auto");
+      debug.setRouteT(0.02);
+      debug.setCamera("chase");
+    });
+    await setOverlay(0, "caption", "开始骑行", "DeepSeek-v4.1-flash · 武陵骑行计划");
+    await ensureClearView("intro-ride", "left");
     await waitForTimestamp(sceneStart + duration);
   },
   async (sceneStart, duration) => {
@@ -576,6 +780,7 @@ const sceneRunners = [
       debug.setCamera("cinema");
       debug.setCameraOffset(0.8, 0.35);
     });
+    await ensureClearView("map-cinema", "front");
     await waitForTimestamp(sceneStart + duration);
   },
   async (sceneStart, duration) => {
@@ -586,31 +791,44 @@ const sceneRunners = [
       debug.setCamera("chase");
       debug.setCameraOffset(-0.45, 0.1);
     });
+    await ensureClearView("auto-chase", "front");
     await waitForTimestamp(sceneStart + duration);
   },
   async (sceneStart, duration) => {
-    await resetFreeRide(0.19);
+    await resetFreeRide(0.02);
     await evaluate(() => {
       const debug = window.__WULING_DEBUG__;
-      debug.freeRide.speed = 7.8;
+      debug.freeRide.speed = 4.2;
       debug.keys.add("KeyW");
       debug.setCamera("chase");
     });
-    await waitForTimestamp(sceneStart + duration * 0.2);
-    await evaluate(() => window.__WULING_DEBUG__.keys.add("KeyA"));
-    await waitForTimestamp(sceneStart + duration * 0.42);
+    await ensureClearView("free-chase", "left");
+    await sampleFreeMotion("free-start");
+    await waitForTimestamp(sceneStart + duration * 0.38);
+    await sampleFreeMotion("free-mid");
     await evaluate(() => {
-      window.__WULING_DEBUG__.keys.delete("KeyA");
-      window.__WULING_DEBUG__.keys.add("KeyD");
-    });
-    await waitForTimestamp(sceneStart + duration * 0.68);
-    await page.evaluate(() => {
       const debug = window.__WULING_DEBUG__;
-      debug.keys.delete("KeyA");
-      debug.keys.delete("KeyD");
-      debug.keys.add("KeyW");
+      debug.keys.delete("KeyW");
+      debug.keys.add("Space");
     });
+    await waitForTimestamp(sceneStart + duration * 0.58);
+    await evaluate(() => window.__WULING_DEBUG__.keys.delete("Space"));
+    await sampleFreeMotion("free-brake");
+    await waitForTimestamp(sceneStart + duration * 0.76);
+    await sampleFreeMotion("free-stop");
     await waitForTimestamp(sceneStart + duration);
+    await sampleFreeMotion("free-finish");
+    const firstFreeSample = motionChecks.find((sample) => sample.label === "free-start");
+    const finalFreeSample = motionChecks.at(-1);
+    if (
+      !firstFreeSample
+      || Math.hypot(
+        finalFreeSample.x - firstFreeSample.x,
+        finalFreeSample.z - firstFreeSample.z,
+      ) < 10
+    ) {
+      throw new Error("free ride did not cover enough open road");
+    }
     await evaluate(() => window.__WULING_DEBUG__.keys.clear());
   },
   async (sceneStart, duration) => {
@@ -640,6 +858,7 @@ const sceneRunners = [
     });
     await setFocusMode(true);
     await setSupportCue("left", "01", "左脚落地支撑", "左侧踏板抬高，左脚接触地面");
+    await ensureClearView("support-left", "front");
     await waitForTimestamp(sceneStart + duration * 0.5);
     await evaluate(() => {
       const debug = window.__WULING_DEBUG__;
@@ -653,6 +872,7 @@ const sceneRunners = [
       debug.setCameraRig([-2.45, 1.05, -0.4], [0, 0.32, 0.35]);
     });
     await setSupportCue("right", "03", "右脚接替支撑", "左脚收回踏板，车辆稳定驻停");
+    await ensureClearView("support-right", "front");
     await waitForTimestamp(sceneStart + duration * 0.94);
     await evaluate(() => {
       const debug = window.__WULING_DEBUG__;
@@ -673,6 +893,7 @@ const sceneRunners = [
       debug.setCamera("low");
       debug.setCameraOffset(-0.55, 0.2);
     });
+    await ensureClearView("reverse-low", "left");
     await waitForTimestamp(sceneStart + duration * 0.84);
     await evaluate(() => window.__WULING_DEBUG__.keys.clear());
     await waitForTimestamp(sceneStart + duration);
@@ -685,12 +906,14 @@ const sceneRunners = [
       debug.setCamera("low");
       debug.setCameraOffset(-1.05, 0.15);
     });
+    await ensureClearView("drivetrain-low", "front");
     await waitForTimestamp(sceneStart + duration * 0.55);
     await evaluate(() => {
       const debug = window.__WULING_DEBUG__;
       debug.setCamera("chase");
       debug.setCameraOffset(1.15, 0.05);
     });
+    await ensureClearView("drivetrain-chase", "left");
     await waitForTimestamp(sceneStart + duration);
   },
   async (sceneStart, duration) => {
@@ -702,6 +925,7 @@ const sceneRunners = [
       debug.setCameraOffset(-1.05, 0.15);
       debug.bicycle.ringBell();
     });
+    await ensureClearView("details-low", "front");
     await waitForTimestamp(sceneStart + duration * 0.5);
     await evaluate(() => {
       const debug = window.__WULING_DEBUG__;
@@ -709,6 +933,7 @@ const sceneRunners = [
       debug.setCameraOffset(0.8, 0.1);
       debug.bicycle.ringBell();
     });
+    await ensureClearView("details-chase", "left");
     await waitForTimestamp(sceneStart + duration);
   },
   async (sceneStart, duration) => {
@@ -719,6 +944,7 @@ const sceneRunners = [
       debug.setCamera("chase");
       debug.setCameraOffset(0.65, 0.15);
     });
+    await ensureClearView("world-start", "front");
     await waitForTimestamp(sceneStart + duration * 0.55);
     await evaluate(() => {
       const debug = window.__WULING_DEBUG__;
@@ -726,22 +952,29 @@ const sceneRunners = [
       debug.setCamera("chase");
       debug.setCameraOffset(-0.7, 0.15);
     });
+    await ensureClearView("world-finish", "left");
     await waitForTimestamp(sceneStart + duration);
   },
   async (sceneStart, duration) => {
+    await resetFreeRide(0.02);
     await evaluate(() => {
       const debug = window.__WULING_DEBUG__;
-      debug.setRideMode("auto");
-      debug.setRouteT(0.82);
+      debug.freeRide.speed = 2.8;
+      debug.keys.add("KeyW");
       debug.setCamera("chase");
-      debug.setCameraOffset(0.45, 0.15);
+      debug.setCameraOffset(0.55, 0.12);
     });
+    await ensureClearView("credits-start", "front");
     await waitForTimestamp(sceneStart + duration * 0.6);
     await evaluate(() => {
       const debug = window.__WULING_DEBUG__;
-      debug.setCamera("chase");
-      debug.setCameraOffset(-0.45, 0.12);
+      debug.keys.clear();
+      debug.keys.add("Space");
+      debug.setCameraOffset(-0.5, 0.1);
     });
+    await page.waitForTimeout(1000);
+    await evaluate(() => window.__WULING_DEBUG__.keys.clear());
+    await ensureClearView("credits-finish", "left");
     await waitForTimestamp(sceneStart + duration);
   },
   async (sceneStart, duration) => {
@@ -752,6 +985,7 @@ const sceneRunners = [
       debug.setCamera("chase");
       debug.setCameraOffset(0.15, 0);
     });
+    await ensureClearView("outro-chase", "front");
     await waitForTimestamp(sceneStart + duration);
   },
 ];
@@ -759,7 +993,7 @@ const sceneRunners = [
 const sceneCopy = [
   {
     style: "title",
-    title: "由 DeepSeek 最新模型生成",
+    title: "由 DeepSeek-v4.1-flash 生成",
     subtitle: "风起武陵 · 佩丽卡骑行计划\nAI 声音复刻演示",
   },
   {
@@ -775,7 +1009,7 @@ const sceneCopy = [
   {
     style: "caption",
     title: "自由操控",
-    subtitle: "WASD / 方向键接管 · A、D 连续转向",
+    subtitle: "W / 方向键自由前进 · 玩家接管速度与路线",
   },
   {
     style: "caption",
@@ -805,7 +1039,7 @@ const sceneCopy = [
   {
     style: "caption",
     title: "制作流程",
-    subtitle: "DeepSeek 最新模型 · Playwright · Three.js · PID · IK · QwenTTS · FFmpeg",
+    subtitle: "DeepSeek-v4.1-flash · Playwright · Three.js · PID · IK · QwenTTS · FFmpeg",
   },
   {
     style: "title",
@@ -820,6 +1054,7 @@ for (let index = 0; index < scenes.length; index++) {
   const scene = scenes[index];
   const sceneStart = timelineStartedAt + sceneStarts[index] * 1000;
   const copy = sceneCopy[index];
+  await page.evaluate(() => window.__WULING_DEBUG__.clearCameraRig());
   await setOverlay(index, copy.style, copy.title, copy.subtitle);
   await sceneRunners[index](sceneStart, scene.duration * 1000);
 }
@@ -882,6 +1117,8 @@ await writeFile(
       recordingResult,
       rendererInfo,
       renderStats,
+      viewChecks,
+      motionChecks,
       scenes: scenes.map((scene, index) => ({
         index: index + 1,
         id: scene.id,
@@ -906,6 +1143,8 @@ console.log(JSON.stringify({
   timelineDuration,
   rendererInfo,
   renderStats,
+  viewChecks,
+  motionChecks,
   sceneCount: scenes.length,
   runtimeErrors,
 }, null, 2));

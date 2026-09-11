@@ -8,9 +8,11 @@
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "verify": "node tools/verify.mjs",
-    "capture:demo": "node tools/capture-hd.mjs",
+    "capture:demo": "node tools/capture-reliable.mjs",
+    "capture:hd": "node tools/capture-hd.mjs",
     "capture:legacy": "node tools/capture-demo.mjs",
-    "build:video": "node tools/build_video.mjs"
+    "build:video": "node tools/build_video.mjs",
+    "build:cover": "node tools/build_cover.mjs"
   },
   "dependencies": {
     "lucide": "^1.44.0",

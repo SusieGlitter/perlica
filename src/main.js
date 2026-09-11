@@ -122,6 +122,7 @@ let activeStopIndex = -1;
 let routeDirty = true;
 let cameraSnap = true;
 let debugCameraRig = null;
+let debugWorldOrbit = null;
 let debugTimeScale = 1;
 let elapsedTime = 0;
 let lastFrameTime = performance.now();
@@ -171,6 +172,7 @@ const RIDER_CLEARANCE = 0.76;
 const BIKE_COLLISION_RADIUS = 0.54;
 const WORLD_UP = new THREE.Vector3(0, 1, 0);
 const RIDE_OBSTACLES = world.rideObstacles;
+const VIEW_RAYCASTER = new THREE.Raycaster();
 const MINIMAP_BOUNDS = { minX: -68, maxX: 68, minZ: -8, maxZ: 88 };
 const MINIMAP_BLOCKS = [
   [-24, 19, 19, 10],
@@ -544,6 +546,81 @@ function resolveRideObstacles(position = freeRide.position) {
   }
 }
 
+function isDescendantOf(object, root) {
+  let current = object;
+  while (current) {
+    if (current === root) return true;
+    current = current.parent;
+  }
+  return false;
+}
+
+function getViewDiagnostics() {
+  const cameraPosition = camera.getWorldPosition(new THREE.Vector3());
+  const bicyclePosition = bicycle.group.getWorldPosition(new THREE.Vector3());
+  const obstacleClearance = 0.08;
+  const cameraInsideObstacle = RIDE_OBSTACLES.some((obstacle) => {
+    if (obstacle.shape === "rect") {
+      return (
+        Math.abs(cameraPosition.x - obstacle.x)
+          <= obstacle.halfX + obstacleClearance
+        && Math.abs(cameraPosition.z - obstacle.z)
+          <= obstacle.halfZ + obstacleClearance
+      );
+    }
+    return Math.hypot(
+      cameraPosition.x - obstacle.x,
+      cameraPosition.z - obstacle.z,
+    ) <= obstacle.radius + obstacleClearance;
+  });
+  const targets = [0.42, 0.9, 1.35].map((height) => (
+    bicyclePosition.clone().setY(bicyclePosition.y + height)
+  ));
+  const rayResults = targets.map((target) => {
+    const cast = (from, to) => {
+      const direction = to.clone().sub(from);
+      const distance = direction.length();
+      VIEW_RAYCASTER.set(from, direction.normalize());
+      VIEW_RAYCASTER.camera = camera;
+      VIEW_RAYCASTER.near = 0.08;
+      VIEW_RAYCASTER.far = Math.max(0.09, distance - 0.25);
+      const hit = VIEW_RAYCASTER
+        .intersectObject(scene, true)
+        .find((intersection) => (
+          intersection.object.visible
+          && !isDescendantOf(intersection.object, bicycle.group)
+          && !/rideable-zone-markers|world-labels/i.test(
+            intersection.object.name || intersection.object.parent?.name || "",
+          )
+        ));
+      return { hit, distance };
+    };
+    const forward = cast(cameraPosition, target);
+    const reverse = cast(target, cameraPosition);
+    const hit = forward.hit ?? reverse.hit;
+    return {
+      target,
+      blocked: Boolean(forward.hit || reverse.hit),
+      hitName: hit?.object.name || hit?.object.parent?.name || null,
+      hitDistance: hit?.distance ?? null,
+      distance: forward.distance,
+      forwardBlocked: Boolean(forward.hit),
+      reverseBlocked: Boolean(reverse.hit),
+    };
+  });
+  const blockedRays = rayResults.filter((result) => result.blocked).length;
+  const forwardBlockedRays = rayResults.filter((result) => result.forwardBlocked).length;
+  const bikeOccluded = forwardBlockedRays >= 2;
+  return {
+    cameraInsideObstacle,
+    blockedRays,
+    forwardBlockedRays,
+    bikeOccluded,
+    clear: !cameraInsideObstacle && !bikeOccluded,
+    rayResults,
+  };
+}
+
 function updateFreeRide(delta) {
   const forwardInput = touchState.throttle || keys.has("KeyW") || keys.has("ArrowUp");
   const brakeInput = touchState.brake || keys.has("Space");
@@ -888,6 +965,22 @@ function updateBike(delta) {
 function getCameraRig() {
   const chaseDistance = isMobile ? 4.6 : 3.85;
   const cinemaTime = elapsedTime * 0.24;
+
+  if (debugWorldOrbit) {
+    const progress = THREE.MathUtils.clamp(
+      (performance.now() - debugWorldOrbit.startedAt) / debugWorldOrbit.durationMs,
+      0,
+      1,
+    );
+    const angle = debugWorldOrbit.startAngle + progress * Math.PI * 2;
+    desiredCameraPosition.set(
+      debugWorldOrbit.center.x + Math.cos(angle) * debugWorldOrbit.radius,
+      debugWorldOrbit.height,
+      debugWorldOrbit.center.z + Math.sin(angle) * debugWorldOrbit.radius,
+    );
+    desiredCameraTarget.copy(debugWorldOrbit.target);
+    return;
+  }
 
   if (debugCameraRig) {
     desiredCameraPosition
@@ -1463,10 +1556,28 @@ if (import.meta.env.DEV) {
       debugCameraRig = null;
       cameraSnap = true;
     },
+    startWorldOrbit(options = {}) {
+      const center = new THREE.Vector3(...(options.center ?? [0, 0, 41]));
+      debugWorldOrbit = {
+        center,
+        target: new THREE.Vector3(...(options.target ?? [0, 5, 41])),
+        radius: options.radius ?? 88,
+        height: options.height ?? 48,
+        startAngle: options.startAngle ?? 0.55,
+        durationMs: (options.duration ?? 9) * 1000,
+        startedAt: performance.now(),
+      };
+      cameraSnap = true;
+    },
+    stopWorldOrbit() {
+      debugWorldOrbit = null;
+      cameraSnap = false;
+    },
     setTimeScale(value = 1) {
       debugTimeScale = THREE.MathUtils.clamp(value, 0.05, 2);
       lastFrameTime = performance.now();
     },
+    getViewDiagnostics,
     get rider() {
       return rider;
     },
