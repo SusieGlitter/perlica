@@ -40,17 +40,17 @@ await page.setContent(`
         inset: -3%;
         content: "";
         background-image: url("data:image/jpeg;base64,${imageData}");
-        background-size: cover;
-        background-position: 57% 43%;
-        transform: scale(1.04);
+        background-size: 128%;
+        background-position: 95% 43%;
+        transform: scale(1.02);
         filter: saturate(1.08) contrast(1.04);
       }
       .shade {
         position: absolute;
         inset: 0;
         background:
-          linear-gradient(90deg, rgba(1, 18, 25, .96) 0%, rgba(1, 18, 25, .83) 35%, rgba(1, 18, 25, .08) 72%),
-          linear-gradient(0deg, rgba(1, 17, 23, .99) 0%, rgba(1, 17, 23, .92) 18%, rgba(1, 17, 23, .45) 40%, rgba(1, 17, 23, 0) 66%);
+          linear-gradient(270deg, rgba(1, 18, 25, .97) 0%, rgba(1, 18, 25, .9) 31%, rgba(1, 18, 25, .36) 55%, rgba(1, 18, 25, 0) 74%),
+          linear-gradient(0deg, rgba(1, 17, 23, .96) 0%, rgba(1, 17, 23, .7) 18%, rgba(1, 17, 23, .12) 42%, rgba(1, 17, 23, 0) 66%);
       }
       .grid {
         position: absolute;
@@ -60,13 +60,13 @@ await page.setContent(`
           linear-gradient(rgba(112, 238, 221, .28) 1px, transparent 1px),
           linear-gradient(90deg, rgba(112, 238, 221, .28) 1px, transparent 1px);
         background-size: 72px 72px;
-        mask-image: linear-gradient(90deg, black, transparent 72%);
+        mask-image: linear-gradient(270deg, black, transparent 72%);
       }
       .copy {
         position: absolute;
-        left: 92px;
-        top: 104px;
-        width: 970px;
+        left: 978px;
+        top: 120px;
+        width: 850px;
         color: #f5fffd;
       }
       .kicker {
@@ -89,7 +89,7 @@ await page.setContent(`
       }
       h1 {
         margin: 30px 0 12px;
-        font-size: 104px;
+        font-size: 96px;
         line-height: 1.03;
         letter-spacing: .035em;
         text-shadow: 0 12px 36px rgba(0, 8, 12, .55);
@@ -99,7 +99,7 @@ await page.setContent(`
         color: #70eedd;
       }
       .subtitle {
-        width: 830px;
+        width: 810px;
         margin: 19px 0 0;
         color: rgba(233, 250, 247, .86);
         font-size: 35px;
@@ -133,7 +133,7 @@ await page.setContent(`
       .badge {
         position: absolute;
         right: 58px;
-        top: 55px;
+        top: 50px;
         padding: 11px 17px;
         color: #071c26;
         background: #70eedd;
